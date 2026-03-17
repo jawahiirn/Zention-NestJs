@@ -5,7 +5,7 @@ import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('auth')
 export class AuthenticationController {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(private readonly authService: AuthenticationService) { }
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -13,6 +13,7 @@ export class AuthenticationController {
     return this.authService.signUp(signUpDto);
   }
 
+  // TODO: Response type to cookies for security
   @Post('signin')
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto) {
