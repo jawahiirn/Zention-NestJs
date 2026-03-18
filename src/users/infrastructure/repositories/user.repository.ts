@@ -1,7 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
-import { UserRepositoryPort, UserCriteria } from '../../application/ports/user.repository.port';
+import {
+  UserRepositoryPort,
+  UserCriteria,
+} from '../../application/ports/user-repository.port';
 import { UserEntity } from '../entities/user.entity';
 import { User } from '../../domain/user';
 import { UserMapper } from '../mappers/user.mapper';
@@ -27,14 +34,14 @@ export class UserRepository implements UserRepositoryPort {
   }
 
   async findOne(criteria: UserCriteria): Promise<User> {
-    const entity = await this.userRepository.findOne({ 
-      where: criteria as FindOptionsWhere<UserEntity> 
+    const entity = await this.userRepository.findOne({
+      where: criteria as FindOptionsWhere<UserEntity>,
     });
-    
+
     if (!entity) {
       throw new NotFoundException('User not found');
     }
-    
+
     return UserMapper.toDomain(entity);
   }
 }

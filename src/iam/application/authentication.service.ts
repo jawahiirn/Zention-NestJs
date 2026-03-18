@@ -1,6 +1,6 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
-import { UserRepositoryPort } from '../../users/application/ports/user.repository.port';
+import { UserRepositoryPort } from '../../users/application/ports/user-repository.port';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
 import { User } from '../../users/domain/user';
