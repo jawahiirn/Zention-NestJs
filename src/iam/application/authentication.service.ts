@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../infrastructure/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { ActiveUserInterface } from '../../common/interfaces/active-user.interface';
+import { RefreshTokenCommand } from './commands/refresh-token.command';
 
 @Injectable()
 export class AuthenticationService {
@@ -27,7 +28,9 @@ export class AuthenticationService {
     await this.userRepository.save(user);
   }
 
-  async signIn(signInDto: SignInCommand): Promise<{ accessToken: string }> {
+  async signIn(
+    signInDto: SignInCommand,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     // Repository now throws NotFoundException if user doesn't exist
     const user = await this.userRepository.findOne({ email: signInDto.email });
 
@@ -42,17 +45,27 @@ export class AuthenticationService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-
-    return {
-      accessToken: await this.signToken(
-        user.id!,
-        this.jwtConfiguration.accessTokenTtl,
-        { email: signInDto.email },
-      ),
-    };
+    return await this.generateTokens(user);
   }
 
-  private async signToken<T>(userId: number, expiresIn: number, payload: T) {
+  async refreshTokens(refreshTokenDto: RefreshTokenCommand) {
+    try {
+      // sub = User ID
+      const { sub } = await this.jwtService.verifyAsync<
+        Pick<ActiveUserInterface, 'sub'>
+      >(refreshTokenDto.refreshToken, {
+        secret: this.jwtConfiguration.secret,
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+      });
+      const user = await this.userRepository.findOne({ id: sub });
+      return await this.generateTokens(user);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  private async signToken<T>(userId: number, expiresIn: number, payload?: T) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
@@ -65,5 +78,19 @@ export class AuthenticationService {
         expiresIn: expiresIn,
       },
     );
+  }
+
+  async generateTokens(user: User) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signToken(user.id!, this.jwtConfiguration.accessTokenTtl, {
+        email: user.email,
+      }),
+      this.signToken(user.id!, this.jwtConfiguration.refreshTokenTtl),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
