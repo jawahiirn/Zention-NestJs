@@ -7,6 +7,7 @@ import { User } from '../../users/domain/user';
 import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../infrastructure/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
+import { ActiveUserInterface } from '../../common/interfaces/active-user.interface';
 
 @Injectable()
 export class AuthenticationService {
@@ -43,7 +44,7 @@ export class AuthenticationService {
       {
         sub: user.id,
         email: signInDto.email,
-      },
+      } as ActiveUserInterface,
       {
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,

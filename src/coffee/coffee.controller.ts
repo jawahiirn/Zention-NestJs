@@ -12,6 +12,7 @@ import { CoffeeService } from './coffee.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { ActiveUser } from '../iam/presenters/http/decorators/active-user.decorator';
+import type { ActiveUserInterface } from '../common/interfaces/active-user.interface';
 
 @Controller('coffee')
 export class CoffeeController {
@@ -25,7 +26,7 @@ export class CoffeeController {
 
   @Get()
   // ActiveUser decorator for demonstration on how to get active user without using Req()
-  findAll(@ActiveUser() user) {
+  findAll(@ActiveUser() user: ActiveUserInterface) {
     this.logger.log(user);
     return this.coffeeService.findAll();
   }
