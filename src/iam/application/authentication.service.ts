@@ -39,21 +39,31 @@ export class AuthenticationService {
     if (!isEqual) {
       throw new UnauthorizedException('Password does not match');
     }
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
 
-    const accessToken = await this.jwtService.signAsync(
+    return {
+      accessToken: await this.signToken(
+        user.id!,
+        this.jwtConfiguration.accessTokenTtl,
+        { email: signInDto.email },
+      ),
+    };
+  }
+
+  private async signToken<T>(userId: number, expiresIn: number, payload: T) {
+    return await this.jwtService.signAsync(
       {
-        sub: user.id,
-        email: signInDto.email,
-      } as ActiveUserInterface,
+        sub: userId,
+        ...payload,
+      },
       {
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
         secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.accessTokenTtl,
+        expiresIn: expiresIn,
       },
     );
-    return {
-      accessToken,
-    };
   }
 }
