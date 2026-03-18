@@ -1,10 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Logger,
+} from '@nestjs/common';
 import { CoffeeService } from './coffee.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { ActiveUser } from '../iam/presenters/http/decorators/active-user.decorator';
 
 @Controller('coffee')
 export class CoffeeController {
+  logger = new Logger('CoffeeController');
   constructor(private readonly coffeeService: CoffeeService) {}
 
   @Post()
@@ -13,7 +24,9 @@ export class CoffeeController {
   }
 
   @Get()
-  findAll() {
+  // ActiveUser decorator for demonstration on how to get active user without using Req()
+  findAll(@ActiveUser() user) {
+    this.logger.log(user);
     return this.coffeeService.findAll();
   }
 
