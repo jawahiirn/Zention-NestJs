@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthenticationGuard } from './presenters/http/guards/authentication.guard';
 import { AccessTokenGuard } from './presenters/http/guards/access-token.guard';
+import { RefreshTokenStoragePort } from './application/ports/refresh-token-storage.port';
+import { RefreshTokenIdsStorage } from './infrastructure/storage/refresh-token.storage';
 
 @Module({
   imports: [
@@ -26,9 +28,14 @@ import { AccessTokenGuard } from './presenters/http/guards/access-token.guard';
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
+    {
+      provide: RefreshTokenStoragePort,
+      useClass: RefreshTokenIdsStorage,
+    },
     AccessTokenGuard,
     AuthenticationService,
   ],
   controllers: [AuthenticationController],
+  exports: [RefreshTokenStoragePort],
 })
 export class IamInfrastructureModule {}
