@@ -6,6 +6,9 @@ import {
 import { RefreshTokenStoragePort } from '../../application/ports/refresh-token-storage.port';
 import Redis from 'ioredis';
 
+// TODO: Move this class to its own dedicated file
+export class InvalidatedRefreshTokenError extends Error {}
+
 @Injectable()
 export class RefreshTokenIdsStorage
   implements
@@ -32,6 +35,9 @@ export class RefreshTokenIdsStorage
   }
   async validate(userId: number, tokenId: string): Promise<boolean> {
     const storeId = await this.redisClient.get(this.getKey(userId));
+    if (storeId !== tokenId) {
+      throw new InvalidatedRefreshTokenError();
+    }
     return storeId === tokenId;
   }
   async invalidate(userId: number): Promise<void> {

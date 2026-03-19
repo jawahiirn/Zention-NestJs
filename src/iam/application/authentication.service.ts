@@ -11,6 +11,7 @@ import { ActiveUserInterface } from '../../common/interfaces/active-user.interfa
 import { RefreshTokenCommand } from './commands/refresh-token.command';
 import { RefreshTokenStoragePort } from './ports/refresh-token-storage.port';
 import { randomUUID } from 'node:crypto';
+import { InvalidatedRefreshTokenError } from '../infrastructure/storage/refresh-token.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -76,6 +77,9 @@ export class AuthenticationService {
 
       return await this.generateTokens(user);
     } catch (error) {
+      if (error instanceof InvalidatedRefreshTokenError) {
+        throw new UnauthorizedException('Access denied');
+      }
       throw new UnauthorizedException();
     }
   }
