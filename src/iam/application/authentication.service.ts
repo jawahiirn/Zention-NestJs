@@ -27,8 +27,9 @@ export class AuthenticationService {
   ) {}
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
+    const userId = randomUUID();
     const hashedPassword = await this.hashingService.hash(signUpDto.password);
-    const user = new User(signUpDto.email, hashedPassword);
+    const user = new User(signUpDto.email, hashedPassword, userId);
 
     await this.userRepository.save(user);
   }
@@ -65,12 +66,12 @@ export class AuthenticationService {
       });
       const user = await this.userRepository.findOne({ id: sub });
       const isValid = await this.refreshTokenIdsStorage.validate(
-        user.id!,
+        user.id,
         refreshTokenId,
       );
 
       if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(user.id!);
+        await this.refreshTokenIdsStorage.invalidate(user.id);
       } else {
         throw new Error('Refresh token invalid');
       }
@@ -84,7 +85,7 @@ export class AuthenticationService {
     }
   }
 
-  private async signToken<T>(userId: number, expiresIn: number, payload?: T) {
+  private async signToken<T>(userId: string, expiresIn: number, payload?: T) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
@@ -103,15 +104,15 @@ export class AuthenticationService {
     const refreshTokenId = randomUUID();
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken(user.id!, this.jwtConfiguration.accessTokenTtl, {
+      this.signToken(user.id, this.jwtConfiguration.accessTokenTtl, {
         email: user.email,
       }),
-      this.signToken(user.id!, this.jwtConfiguration.refreshTokenTtl, {
+      this.signToken(user.id, this.jwtConfiguration.refreshTokenTtl, {
         refreshTokenId,
       }),
     ]);
 
-    await this.refreshTokenIdsStorage.insert(user.id!, refreshTokenId);
+    await this.refreshTokenIdsStorage.insert(user.id, refreshTokenId);
 
     return {
       accessToken,

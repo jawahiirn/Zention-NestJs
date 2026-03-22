@@ -7,9 +7,7 @@ export class UserMapper {
   }
   static toPersistence(user: User): UserEntity {
     const entity = new UserEntity();
-    if (user.id) {
-      entity.id = user.id;
-    }
+    entity.id = user.id;
     entity.email = user.email;
     entity.password = user.password;
     return entity;
