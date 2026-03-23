@@ -66,4 +66,8 @@ export class WorkspaceRepository implements WorkspaceRepositoryPort {
     }
     return WorkspaceMemberMapper.toDomain(entity);
   }
+
+  async remove(workspaceId: string): Promise<void> {
+    await this.workspaceRepository.delete({ id: workspaceId });
+  }
 }

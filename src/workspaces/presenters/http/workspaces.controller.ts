@@ -62,8 +62,7 @@ export class WorkspacesController {
 
   @Delete(':id')
   @Roles(WorkspaceRole.OWNER)
-  remove(@Param('id') id: string) {
-    // To be implemented
-    return this.workspacesService.remove(id);
+  remove(@Param('id') id: string, @ActiveUser('sub') userId: string) {
+    return this.workspacesService.remove(id, userId!);
   }
 }

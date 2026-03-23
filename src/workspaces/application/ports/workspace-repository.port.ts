@@ -12,4 +12,5 @@ export abstract class WorkspaceRepositoryPort {
     userId: string,
     workspaceId: string,
   ): Promise<WorkspaceMember>;
+  abstract remove(workspaceId: string): Promise<void>;
 }

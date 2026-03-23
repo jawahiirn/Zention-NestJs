@@ -47,8 +47,9 @@ export class WorkspacesService {
     return updatedWorkspace;
   }
 
-  remove(id: string) {
-    // To be implemented
-    return `This action removes a #${id} workspace`;
+  async remove(id: string, userId: string): Promise<void> {
+    // Verify participation and existence
+    await this.workspaceRepository.findById(userId, id);
+    await this.workspaceRepository.remove(id);
   }
 }
