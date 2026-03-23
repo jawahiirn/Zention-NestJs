@@ -1,24 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateWorkspaceCommand } from './commands/create-workspace.command';
+import { WorkspaceRepositoryPort } from './ports/workspace-repository.port';
+import { WorkspaceFactory } from '../domain/factories/workspace.factory';
+import { Workspace } from '../domain/workspace';
 
 @Injectable()
 export class WorkspacesService {
-  create(createWorkspaceDto: any) {
-    return 'This action adds a new workspace';
+  constructor(
+    @Inject(WorkspaceRepositoryPort)
+    private readonly workspaceRepository: WorkspaceRepositoryPort,
+  ) {}
+
+  async create(command: CreateWorkspaceCommand): Promise<Workspace> {
+    const { workspace, membership } = WorkspaceFactory.create(
+      command.name,
+      command.icon,
+      command.iconColor,
+      command.userId,
+    );
+
+    await this.workspaceRepository.save(workspace);
+    await this.workspaceRepository.saveMember(membership);
+
+    return workspace;
   }
 
-  findAll() {
-    return `This action returns all workspaces`;
+  findAll(userId: string): Promise<Workspace[]> {
+    return this.workspaceRepository.findAllByUserId(userId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} workspace`;
+  findOne(id: string): Promise<Workspace> {
+    return this.workspaceRepository.findById(id);
   }
 
-  update(id: number, updateWorkspaceDto: any) {
+  update(id: string, updateWorkspaceDto: any) {
+    // To be implemented
     return `This action updates a #${id} workspace`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
+    // To be implemented
     return `This action removes a #${id} workspace`;
   }
 }
