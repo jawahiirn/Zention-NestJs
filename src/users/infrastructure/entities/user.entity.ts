@@ -10,4 +10,16 @@ export class UserEntity {
 
   @Column()
   password: string;
+
+  @Column()
+  fullName: string;
+
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  updatedAt: Date;
+
+  @Column()
+  isActive: boolean;
 }

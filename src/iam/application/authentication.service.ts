@@ -27,9 +27,20 @@ export class AuthenticationService {
   ) {}
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
+    const { email, password, fullName } = signUpDto;
     const userId = randomUUID();
-    const hashedPassword = await this.hashingService.hash(signUpDto.password);
-    const user = new User(signUpDto.email, hashedPassword, userId);
+    const hashedPassword = await this.hashingService.hash(password);
+    const isUserActive = true;
+
+    const user = new User(
+      email,
+      hashedPassword,
+      userId,
+      fullName,
+      new Date(),
+      new Date(),
+      isUserActive,
+    );
 
     await this.userRepository.save(user);
   }
