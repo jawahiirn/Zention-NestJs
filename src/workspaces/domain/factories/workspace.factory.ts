@@ -17,8 +17,8 @@ export class WorkspaceFactory {
     const workspace = new Workspace(
       workspaceId,
       name,
-      icon,
-      iconColor,
+      icon ?? '',
+      iconColor ?? '',
       now,
       now,
     );
