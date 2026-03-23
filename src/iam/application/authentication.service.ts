@@ -37,7 +37,6 @@ export class AuthenticationService {
   async signIn(
     signInDto: SignInCommand,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    // Repository now throws NotFoundException if user doesn't exist
     const user = await this.userRepository.findOne({ email: signInDto.email });
 
     const isEqual = await this.hashingService.compare(
