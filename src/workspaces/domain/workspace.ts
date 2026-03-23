@@ -1,12 +1,12 @@
 export class Workspace {
   constructor(
-    public id: string,
-    public name: string,
-    public icon: string,
-    public iconColor: string,
-    public theme: string,
-    public sidebarType: string,
-    updatedAt: Date,
-    createdAt: Date,
+    public readonly id: string,
+    public readonly name: string,
+    public readonly icon: string,
+    public readonly iconColor: string,
+    public readonly theme: string,
+    public readonly sidebarType: string,
+    public readonly createdAt: Date,
+    public readonly updatedAt: Date,
   ) {}
 }
