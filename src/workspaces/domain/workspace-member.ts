@@ -1,5 +1,5 @@
-import { WorkspaceRole } from './workspace-role.enum';
-import { WorkspaceMemberStatus } from './workspace-member-status.enum';
+import { WorkspaceRole } from './enums/workspace-role.enum';
+import { WorkspaceMemberStatus } from './enums/workspace-member-status.enum';
 
 export class WorkspaceMember {
   constructor(
