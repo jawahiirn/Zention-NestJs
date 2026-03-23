@@ -20,8 +20,9 @@ export class AccessTokenGuard implements CanActivate {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(RefreshTokenStoragePort)
     private readonly refreshTokenStorage: RefreshTokenStoragePort,
-  ) {}
+  ) { }
 
+  // TODO: Sync Database with Redis
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);

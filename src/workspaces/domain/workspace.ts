@@ -7,4 +7,19 @@ export class Workspace {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
+
+  update(params: {
+    name?: string;
+    icon?: string;
+    iconColor?: string;
+  }): Workspace {
+    return new Workspace(
+      this.id,
+      params.name ?? this.name,
+      params.icon ?? this.icon,
+      params.iconColor ?? this.iconColor,
+      this.createdAt,
+      new Date(),
+    );
+  }
 }

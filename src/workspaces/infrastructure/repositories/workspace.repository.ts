@@ -24,6 +24,7 @@ export class WorkspaceRepository implements WorkspaceRepositoryPort {
   }
 
   async findById(userId: string, workspaceId: string): Promise<Workspace> {
+    // Check to see if the user request for the resource has access to it.
     await this.findMember(userId, workspaceId);
     const entity = await this.workspaceRepository.findOneBy({
       id: workspaceId,
