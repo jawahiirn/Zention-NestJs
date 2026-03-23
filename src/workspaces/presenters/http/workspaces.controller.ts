@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { WorkspacesService } from '../../application/workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
@@ -13,9 +14,13 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { Auth } from '../../../iam/presenters/http/decorators/auth.decorator';
 import { AuthType } from '../../../common/enums/auth-type.enum';
 import { ActiveUser } from '../../../iam/presenters/http/decorators/active-user.decorator';
+import { WorkspaceRolesGuard } from './guards/workspace-roles.guard';
+import { Roles } from './decorators/roles.decorator';
+import { WorkspaceRole } from '../../domain/enums/workspace-role.enum';
 
 @Controller('workspace')
 @Auth(AuthType.Bearer)
+@UseGuards(WorkspaceRolesGuard)
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
 
@@ -36,11 +41,13 @@ export class WorkspacesController {
   }
 
   @Get(':id')
+  @Roles(WorkspaceRole.OWNER, WorkspaceRole.ADMIN, WorkspaceRole.MEMBER, WorkspaceRole.GUEST)
   findOne(@ActiveUser('sub') userId: string, @Param('id') id: string) {
     return this.workspacesService.findOne(userId, id);
   }
 
   @Patch(':id')
+  @Roles(WorkspaceRole.OWNER, WorkspaceRole.ADMIN)
   update(
     @Param('id') id: string,
     @Body() updateWorkspaceDto: UpdateWorkspaceDto,
@@ -54,6 +61,7 @@ export class WorkspacesController {
   }
 
   @Delete(':id')
+  @Roles(WorkspaceRole.OWNER)
   remove(@Param('id') id: string) {
     // To be implemented
     return this.workspacesService.remove(id);
