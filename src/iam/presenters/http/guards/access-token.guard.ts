@@ -10,6 +10,7 @@ import jwtConfig from '../../../infrastructure/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { Request } from 'express';
 import { REQUEST_USER_KEY } from '../../../../common/constants/iam.constants';
+import { RefreshTokenStoragePort } from '../../../application/ports/refresh-token-storage.port';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
@@ -17,6 +18,8 @@ export class AccessTokenGuard implements CanActivate {
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+    @Inject(RefreshTokenStoragePort)
+    private readonly refreshTokenStorage: RefreshTokenStoragePort,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -26,10 +29,20 @@ export class AccessTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      request[REQUEST_USER_KEY] = await this.jwtService.verifyAsync(
+      const payload = await this.jwtService.verifyAsync(
         token,
         this.jwtConfiguration,
       );
+
+      const isSuspended = await this.refreshTokenStorage.isSuspended(
+        payload.sub,
+      );
+
+      if (isSuspended) {
+        throw new UnauthorizedException('User account is suspended');
+      }
+
+      request[REQUEST_USER_KEY] = payload;
     } catch {
       throw new UnauthorizedException();
     }

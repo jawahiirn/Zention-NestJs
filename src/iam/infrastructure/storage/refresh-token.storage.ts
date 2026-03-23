@@ -43,7 +43,25 @@ export class RefreshTokenIdsStorage
   async invalidate(userId: string): Promise<void> {
     await this.redisClient.del(this.getKey(userId));
   }
+
+  async suspend(userId: string): Promise<void> {
+    await this.redisClient.set(this.getSuspensionKey(userId), 'true');
+  }
+
+  async isSuspended(userId: string): Promise<boolean> {
+    const isSuspended = await this.redisClient.get(this.getSuspensionKey(userId));
+    return isSuspended === 'true';
+  }
+
+  async activate(userId: string): Promise<void> {
+    await this.redisClient.del(this.getSuspensionKey(userId));
+  }
+
   getKey(userId: string): string {
     return `user-${userId}`;
+  }
+
+  private getSuspensionKey(userId: string): string {
+    return `user-suspended-${userId}`;
   }
 }
