@@ -30,20 +30,38 @@ export class RefreshTokenIdsStorage
     return this.redisClient.quit();
   }
 
-  async insert(userId: number, tokenId: string): Promise<void> {
+  async insert(userId: string, tokenId: string): Promise<void> {
     await this.redisClient.set(this.getKey(userId), tokenId);
   }
-  async validate(userId: number, tokenId: string): Promise<boolean> {
+  async validate(userId: string, tokenId: string): Promise<boolean> {
     const storeId = await this.redisClient.get(this.getKey(userId));
     if (storeId !== tokenId) {
       throw new InvalidatedRefreshTokenError();
     }
     return storeId === tokenId;
   }
-  async invalidate(userId: number): Promise<void> {
+  async invalidate(userId: string): Promise<void> {
     await this.redisClient.del(this.getKey(userId));
   }
-  getKey(userId: number): string {
+
+  async suspend(userId: string): Promise<void> {
+    await this.redisClient.set(this.getSuspensionKey(userId), 'true');
+  }
+
+  async isSuspended(userId: string): Promise<boolean> {
+    const isSuspended = await this.redisClient.get(this.getSuspensionKey(userId));
+    return isSuspended === 'true';
+  }
+
+  async activate(userId: string): Promise<void> {
+    await this.redisClient.del(this.getSuspensionKey(userId));
+  }
+
+  getKey(userId: string): string {
     return `user-${userId}`;
+  }
+
+  private getSuspensionKey(userId: string): string {
+    return `user-suspended-${userId}`;
   }
 }
