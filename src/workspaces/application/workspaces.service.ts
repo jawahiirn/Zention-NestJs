@@ -33,8 +33,8 @@ export class WorkspacesService {
     return this.workspaceRepository.findAllByUserId(userId);
   }
 
-  findOne(id: string): Promise<Workspace> {
-    return this.workspaceRepository.findById(id);
+  findOne(userId: string, id: string): Promise<Workspace> {
+    return this.workspaceRepository.findById(userId, id);
   }
 
   update(id: string, updateWorkspaceDto: any) {

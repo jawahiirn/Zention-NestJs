@@ -23,10 +23,15 @@ export class WorkspaceRepository implements WorkspaceRepositoryPort {
     await this.workspaceRepository.save(entity);
   }
 
-  async findById(id: string): Promise<Workspace> {
-    const entity = await this.workspaceRepository.findOneBy({ id });
+  async findById(userId: string, workspaceId: string): Promise<Workspace> {
+    await this.findMember(userId, workspaceId);
+    const entity = await this.workspaceRepository.findOneBy({
+      id: workspaceId,
+    });
     if (!entity) {
-      throw new NotFoundException(`Workspace with ID ${id} not found.`);
+      throw new NotFoundException(
+        `Workspace with ID ${workspaceId} not found.`,
+      );
     }
     return WorkspaceMapper.toDomain(entity);
   }
@@ -56,7 +61,7 @@ export class WorkspaceRepository implements WorkspaceRepositoryPort {
       workspaceId,
     });
     if (!entity) {
-      throw new NotFoundException('Workspace membership not found.');
+      throw new NotFoundException('Workspace not found.');
     }
     return WorkspaceMemberMapper.toDomain(entity);
   }

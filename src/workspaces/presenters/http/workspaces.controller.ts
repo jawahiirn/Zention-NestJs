@@ -13,7 +13,7 @@ import { Auth } from '../../../iam/presenters/http/decorators/auth.decorator';
 import { AuthType } from '../../../common/enums/auth-type.enum';
 import { ActiveUser } from '../../../iam/presenters/http/decorators/active-user.decorator';
 
-@Controller('workspaces')
+@Controller('workspace')
 @Auth(AuthType.Bearer)
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
@@ -31,12 +31,12 @@ export class WorkspacesController {
 
   @Get()
   findAll(@ActiveUser('sub') userId: string) {
-    return this.workspacesService.findAll(userId!);
+    return this.workspacesService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.workspacesService.findOne(id);
+  findOne(@ActiveUser('sub') userId: string, @Param('id') id: string) {
+    return this.workspacesService.findOne(userId, id);
   }
 
   @Patch(':id')
