@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
-import { WorkspacesController } from '../presenters/workspaces.controller';
+import { WorkspacesController } from '../presenters/http/workspaces.controller';
 import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 
 @Module({

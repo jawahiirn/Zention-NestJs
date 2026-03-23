@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { WorkspaceRepositoryPort } from './ports/workspace-repository.port';
 import { WorkspaceFactory } from '../domain/factories/workspace.factory';
 import { Workspace } from '../domain/workspace';
@@ -11,12 +10,17 @@ export class WorkspacesService {
     private readonly workspaceRepository: WorkspaceRepositoryPort,
   ) {}
 
-  async create(command: CreateWorkspaceCommand): Promise<Workspace> {
+  async create(createParams: {
+    name: string;
+    userId: string;
+    icon?: string;
+    iconColor?: string;
+  }): Promise<Workspace> {
     const { workspace, membership } = WorkspaceFactory.create(
-      command.name,
-      command.icon,
-      command.iconColor,
-      command.userId,
+      createParams.name,
+      createParams.userId,
+      createParams.icon,
+      createParams.iconColor,
     );
 
     await this.workspaceRepository.save(workspace);

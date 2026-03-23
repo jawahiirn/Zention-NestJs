@@ -7,9 +7,9 @@ import { WorkspaceMemberStatus } from '../enums/workspace-member-status.enum';
 export class WorkspaceFactory {
   static create(
     name: string,
-    icon: string,
-    iconColor: string,
     ownerId: string,
+    icon?: string,
+    iconColor?: string,
   ): { workspace: Workspace; membership: WorkspaceMember } {
     const workspaceId = randomUUID();
     const now = new Date();
