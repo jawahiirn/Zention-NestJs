@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../../domain/user';
 
 export type UserCriteria = {
-  id?: number;
+  id?: string;
   email?: string;
 };
 
