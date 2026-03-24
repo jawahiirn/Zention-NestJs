@@ -22,9 +22,10 @@ export class RefreshTokenIdsStorage
 
   onApplicationBootstrap(): any {
     // TODO: Ideally, move this to dedicated RedisModule
-    this.logger.log(process.env.REDIS_HOST);
     this.logger.log(`REDIS_URL: ${process.env.REDIS_URL}`);
-    this.logger.log(`REDIS_HOST: ${process.env.REDIS_HOST}`);
+    this.logger.log(
+      `REDIS_HOST: ${process.env.REDIS_HOST}: ${process.env.REDIS_PORT}`,
+    );
 
     const redisUrl = process.env.REDIS_URL;
 
