@@ -40,6 +40,7 @@ export class AuthenticationService {
       new Date(),
       new Date(),
       isUserActive,
+      null,
     );
 
     await this.userRepository.save(user);
@@ -50,10 +51,9 @@ export class AuthenticationService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userRepository.findOne({ email: signInDto.email });
 
-    const isEqual = await this.hashingService.compare(
-      signInDto.password,
-      user.password,
-    );
+    const isEqual = user?.password
+      ? await this.hashingService.compare(signInDto.password, user.password)
+      : false;
 
     if (!isEqual) {
       throw new UnauthorizedException('Password does not match');
