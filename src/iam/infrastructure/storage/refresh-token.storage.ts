@@ -23,10 +23,21 @@ export class RefreshTokenIdsStorage
   onApplicationBootstrap(): any {
     // TODO: Ideally, move this to dedicated RedisModule
     this.logger.log(process.env.REDIS_HOST);
-    this.redisClient = new Redis({
-      host: process.env.REDIS_HOST! ?? 'localhost',
-      port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
-    });
+    this.logger.log(`REDIS_URL: ${process.env.REDIS_URL}`);
+    this.logger.log(`REDIS_HOST: ${process.env.REDIS_HOST}`);
+
+    const redisUrl = process.env.REDIS_URL;
+
+    if (!redisUrl) {
+      this.redisClient = new Redis({
+        host: process.env.REDIS_HOST ?? 'localhost',
+        port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+      });
+    } else {
+      this.redisClient = new Redis(redisUrl, {
+        tls: {},
+      });
+    }
   }
 
   onApplicationShutdown(signal?: string): any {
