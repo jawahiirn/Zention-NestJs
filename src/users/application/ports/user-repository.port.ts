@@ -4,6 +4,7 @@ import { User } from '../../domain/user';
 export type UserCriteria = {
   id?: string;
   email?: string;
+  googleId?: string;
 };
 
 @Injectable()

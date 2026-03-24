@@ -2,6 +2,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -44,22 +45,25 @@ export class SocialAuthenticationService implements OnModuleInit {
         throw new Error('Google login failed due to missing variables.');
       }
 
-      const user = await this.userRepository.findOne({ id: googleId });
-      // if user exists, return token else create a new user.
-      if (user) {
+      try {
+        const user = await this.userRepository.findOne({ googleId });
         return this.authService.generateTokens(user);
-      } else {
-        const newUser = new User(
-          email,
-          null, // Password is null for social users
-          randomUUID(),
-          fullName,
-          new Date(),
-          new Date(),
-          true, // isActive
-          googleId,
-        );
-        return this.userRepository.save(newUser);
+      } catch (err) {
+        if (err instanceof NotFoundException) {
+          const newUser = new User(
+            email,
+            null, // Password is null for social users
+            randomUUID(),
+            fullName,
+            new Date(),
+            new Date(),
+            true, // isActive
+            googleId,
+          );
+          await this.userRepository.save(newUser);
+          return this.authService.generateTokens(newUser);
+        }
+        throw err;
       }
     } catch (err) {
       const pgUniqueViolationErrorCode = '23505';
