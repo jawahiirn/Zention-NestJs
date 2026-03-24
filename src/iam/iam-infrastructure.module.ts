@@ -3,6 +3,8 @@ import { HashingService } from './application/ports/hashing.service';
 import { BcryptService } from './infrastructure/repositories/bcrypt.service';
 import { AuthenticationController } from './presenters/http/authentication.controller';
 import { AuthenticationService } from './application/authentication.service';
+import { SocialAuthenticationController } from './presenters/http/social-authentication.controller';
+import { SocialAuthenticationService } from './application/social-authentication.service';
 import { UsersModule } from '../users/application/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './infrastructure/config/jwt.config';
@@ -12,7 +14,6 @@ import { AuthenticationGuard } from './presenters/http/guards/authentication.gua
 import { AccessTokenGuard } from './presenters/http/guards/access-token.guard';
 import { RefreshTokenStoragePort } from './application/ports/refresh-token-storage.port';
 import { RefreshTokenIdsStorage } from './infrastructure/storage/refresh-token.storage';
-import { SocialAuthenticationController } from './presenters/http/social-authentication.controller';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { SocialAuthenticationController } from './presenters/http/social-authent
     },
     AccessTokenGuard,
     AuthenticationService,
+    SocialAuthenticationService,
   ],
   controllers: [AuthenticationController, SocialAuthenticationController],
   exports: [RefreshTokenStoragePort],

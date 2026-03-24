@@ -8,10 +8,10 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  password: string;
+  @Column({ type: 'varchar', nullable: true })
+  password: string | null;
 
-  @Column()
+  @Column({ default: '' })
   fullName: string;
 
   @Column()
@@ -20,6 +20,9 @@ export class UserEntity {
   @Column()
   updatedAt: Date;
 
-  @Column()
+  @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  googleId: string | null;
 }

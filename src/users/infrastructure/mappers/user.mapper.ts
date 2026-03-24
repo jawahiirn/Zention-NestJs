@@ -11,17 +11,20 @@ export class UserMapper {
       userEntity.createdAt,
       userEntity.updatedAt,
       userEntity.isActive,
+      userEntity.googleId,
     );
   }
+
   static toPersistence(user: User): UserEntity {
     const entity = new UserEntity();
     entity.id = user.id;
     entity.email = user.email;
     entity.password = user.password;
+    entity.fullName = user.fullName;
     entity.createdAt = user.createdAt;
     entity.updatedAt = user.updatedAt;
     entity.isActive = user.isActive;
-    entity.fullName = user.fullName;
+    entity.googleId = user.googleId;
     return entity;
   }
 }
