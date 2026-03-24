@@ -7,23 +7,27 @@ import { RefreshTokenStoragePort } from '../../application/ports/refresh-token-s
 import Redis from 'ioredis';
 
 // TODO: Move this class to its own dedicated file
-export class InvalidatedRefreshTokenError extends Error {}
+export class InvalidatedRefreshTokenError extends Error { }
 
 @Injectable()
 export class RefreshTokenIdsStorage
   implements
-    RefreshTokenStoragePort,
-    OnApplicationBootstrap,
-    OnApplicationShutdown
-{
+  RefreshTokenStoragePort,
+  OnApplicationBootstrap,
+  OnApplicationShutdown {
   private redisClient: Redis;
 
   onApplicationBootstrap(): any {
-    // TODO: Ideally, move this to dedicated RedisModule
-    this.redisClient = new Redis({
-      host: process.env.REDIS_HOST! ?? 'localhost',
-      port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
-    });
+    // Handling full URLs (e.g. redis://...) or separate host/port pairs
+    const redisHost = process.env.REDIS_HOST ?? 'localhost';
+    if (redisHost.startsWith('redis://')) {
+      this.redisClient = new Redis(redisHost);
+    } else {
+      this.redisClient = new Redis({
+        host: redisHost,
+        port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+      });
+    }
   }
 
   onApplicationShutdown(signal?: string): any {
