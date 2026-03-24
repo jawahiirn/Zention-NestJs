@@ -66,7 +66,7 @@ export class SocialAuthenticationService implements OnModuleInit {
       if (err.code === pgUniqueViolationErrorCode) {
         throw new ConflictException();
       } else {
-        throw new UnauthorizedException();
+        throw new Error(err.message);
       }
     }
   }
