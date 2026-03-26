@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -12,4 +12,9 @@ export class CreateWorkspaceDto {
   @IsString()
   @IsOptional()
   iconColor?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsEmail({}, { each: true })
+  invitedEmails?: string[];
 }

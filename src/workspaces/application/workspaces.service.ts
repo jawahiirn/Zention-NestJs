@@ -4,12 +4,15 @@ import { WorkspaceFactory } from '../domain/factories/workspace.factory';
 import { Workspace } from '../domain/workspace';
 import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { UpdateWorkspaceCommand } from './commands/update-workspace.command';
+import { UsersService } from '../../users/application/users.service';
+import { CreateUserCommand } from '../../users/application/commands/create-user.command';
 
 @Injectable()
 export class WorkspacesService {
   constructor(
     @Inject(WorkspaceRepositoryPort)
     private readonly workspaceRepository: WorkspaceRepositoryPort,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(command: CreateWorkspaceCommand): Promise<Workspace> {
@@ -22,6 +25,24 @@ export class WorkspacesService {
 
     await this.workspaceRepository.save(workspace);
     await this.workspaceRepository.saveMember(membership);
+
+    if (command.invitedEmails && command.invitedEmails.length > 0) {
+      for (const email of command.invitedEmails) {
+        let user = await this.usersService.findByEmail(email);
+
+        if (!user) {
+          // Create ghost user
+          user = await this.usersService.create(new CreateUserCommand(email));
+        }
+
+        const inviteeMembership = WorkspaceFactory.createMembership(
+          user.id,
+          workspace.id,
+        );
+
+        await this.workspaceRepository.saveMember(inviteeMembership);
+      }
+    }
 
     return workspace;
   }
