@@ -12,6 +12,7 @@ export class UserMapper {
       userEntity.updatedAt,
       userEntity.isActive,
       userEntity.googleId,
+      userEntity.isPending,
     );
   }
 
@@ -25,6 +26,7 @@ export class UserMapper {
     entity.updatedAt = user.updatedAt;
     entity.isActive = user.isActive;
     entity.googleId = user.googleId;
+    entity.isPending = user.isPending;
     return entity;
   }
 }
