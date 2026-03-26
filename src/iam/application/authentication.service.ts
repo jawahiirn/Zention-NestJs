@@ -1,6 +1,5 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
-import { UserRepositoryPort } from '../../users/application/ports/user-repository.port';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
 import { User } from '../../users/domain/user';
@@ -12,13 +11,14 @@ import { RefreshTokenCommand } from './commands/refresh-token.command';
 import { RefreshTokenStoragePort } from './ports/refresh-token-storage.port';
 import { randomUUID } from 'node:crypto';
 import { InvalidatedRefreshTokenError } from '../infrastructure/storage/refresh-token.storage';
+import { UsersService } from '../../users/application/users.service';
+import { CreateUserCommand } from '../../users/application/commands/create-user.command';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly hashingService: HashingService,
-    @Inject(UserRepositoryPort)
-    private readonly userRepository: UserRepositoryPort,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
@@ -28,39 +28,43 @@ export class AuthenticationService {
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
     const { email, password, fullName } = signUpDto;
-    const userId = randomUUID();
     const hashedPassword = await this.hashingService.hash(password);
-    const isUserActive = true;
 
-    const user = new User(
-      email,
-      hashedPassword,
-      userId,
-      fullName,
-      new Date(),
-      new Date(),
-      isUserActive,
-      null,
+    const existingUser = await this.usersService.findByEmail(email);
+
+    if (existingUser) {
+      if (existingUser.isPending) {
+        // ACTIVATE GHOST USER
+        const activatedUser = existingUser.activate(hashedPassword, fullName);
+        await this.usersService.update(activatedUser);
+        return;
+      }
+      // REAL USER ALREADY EXISTS
+      throw new Error('User already exists');
+    }
+
+    await this.usersService.create(
+      new CreateUserCommand(email, hashedPassword, fullName),
     );
-
-    await this.userRepository.save(user);
   }
 
   async signIn(
     signInDto: SignInCommand,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.userRepository.findOne({ email: signInDto.email });
+    const user = await this.usersService.findByEmail(signInDto.email);
 
-    const isEqual = user?.password
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isEqual = user.password
       ? await this.hashingService.compare(signInDto.password, user.password)
       : false;
 
     if (!isEqual) {
       throw new UnauthorizedException('Password does not match');
     }
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
+
     return await this.generateTokens(user);
   }
 
@@ -74,7 +78,7 @@ export class AuthenticationService {
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
       });
-      const user = await this.userRepository.findOne({ id: sub });
+      const user = await this.usersService.findById(sub);
       const isValid = await this.refreshTokenIdsStorage.validate(
         user.id,
         refreshTokenId,
