@@ -34,6 +34,7 @@ export class WorkspacesService {
           // Create ghost user
           user = await this.usersService.create(new CreateUserCommand(email));
         }
+        if (user.email === email) continue; // Skip your own invitation.
 
         const inviteeMembership = WorkspaceFactory.createMembership(
           user.id,
