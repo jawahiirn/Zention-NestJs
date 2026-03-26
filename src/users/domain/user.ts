@@ -24,4 +24,18 @@ export class User {
       false, // isPending
     );
   }
+
+  claimSocial(googleId: string, fullName?: string): User {
+    return new User(
+      this.email,
+      this.password,
+      this.id,
+      fullName ?? this.fullName,
+      this.createdAt,
+      new Date(),
+      true, // isActive
+      googleId,
+      false, // isPending
+    );
+  }
 }

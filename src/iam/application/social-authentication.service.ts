@@ -48,6 +48,17 @@ export class SocialAuthenticationService implements OnModuleInit {
         return this.authService.generateTokens(user);
       } catch (err) {
         if (err instanceof NotFoundException) {
+          // CHECK IF EMAIL ALREADY EXISTS (GHOST OR LOCAL USER)
+          const existingUser = await this.usersService.findByEmail(email);
+
+          if (existingUser) {
+            // MERGE GOOGLE ACCOUNT
+            const claimedUser = existingUser.claimSocial(googleId, fullName);
+            await this.usersService.update(claimedUser);
+            return this.authService.generateTokens(claimedUser);
+          }
+
+          // BRAND NEW USER
           const newUser = await this.usersService.create(
             new CreateUserCommand(email, null, fullName, googleId, false, true),
           );
