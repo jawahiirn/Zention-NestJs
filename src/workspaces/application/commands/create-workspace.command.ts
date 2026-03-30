@@ -4,5 +4,6 @@ export class CreateWorkspaceCommand {
     public readonly userId: string,
     public readonly icon?: string,
     public readonly iconColor?: string,
+    public readonly invitedEmails?: string[],
   ) {}
 }

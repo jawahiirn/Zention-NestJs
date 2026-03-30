@@ -25,4 +25,7 @@ export class UserEntity {
 
   @Column({ type: 'varchar', nullable: true, unique: true })
   googleId: string | null;
+
+  @Column({ default: false })
+  isPending: boolean;
 }

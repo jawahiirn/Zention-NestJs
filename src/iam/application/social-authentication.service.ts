@@ -9,9 +9,8 @@ import {
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from './authentication.service';
-import { UserRepositoryPort } from '../../users/application/ports/user-repository.port';
-import { randomUUID } from 'node:crypto';
-import { User } from '../../users/domain/user';
+import { UsersService } from '../../users/application/users.service';
+import { CreateUserCommand } from '../../users/application/commands/create-user.command';
 
 @Injectable()
 export class SocialAuthenticationService implements OnModuleInit {
@@ -20,8 +19,7 @@ export class SocialAuthenticationService implements OnModuleInit {
   constructor(
     private readonly configService: ConfigService,
     private readonly authService: AuthenticationService,
-    @Inject(UserRepositoryPort)
-    private readonly userRepository: UserRepositoryPort,
+    private readonly usersService: UsersService,
   ) {}
 
   onModuleInit(): any {
@@ -46,21 +44,24 @@ export class SocialAuthenticationService implements OnModuleInit {
       }
 
       try {
-        const user = await this.userRepository.findOne({ googleId });
+        const user = await this.usersService.findOne(googleId);
         return this.authService.generateTokens(user);
       } catch (err) {
         if (err instanceof NotFoundException) {
-          const newUser = new User(
-            email,
-            null, // Password is null for social users
-            randomUUID(),
-            fullName,
-            new Date(),
-            new Date(),
-            true, // isActive
-            googleId,
+          // CHECK IF EMAIL ALREADY EXISTS (GHOST OR LOCAL USER)
+          const existingUser = await this.usersService.findByEmail(email);
+
+          if (existingUser) {
+            // MERGE GOOGLE ACCOUNT
+            const claimedUser = existingUser.claimSocial(googleId, fullName);
+            await this.usersService.update(claimedUser);
+            return this.authService.generateTokens(claimedUser);
+          }
+
+          // BRAND NEW USER
+          const newUser = await this.usersService.create(
+            new CreateUserCommand(email, null, fullName, googleId, false, true),
           );
-          await this.userRepository.save(newUser);
           return this.authService.generateTokens(newUser);
         }
         throw err;
