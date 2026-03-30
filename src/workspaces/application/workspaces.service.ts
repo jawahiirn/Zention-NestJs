@@ -11,6 +11,8 @@ import { CreateUserCommand } from '../../users/application/commands/create-user.
 import { WorkspaceMemberRepositoryPort } from './ports/workspace-member-repository.port';
 import { InviteMemberCommand } from './commands/invite-member.command';
 import { AcceptInvitationCommand } from './commands/accept-invitation.command';
+import { UpdateMemberRoleCommand } from './commands/update-member-role.command';
+import { RemoveMemberCommand } from './commands/remove-member.command';
 
 @Injectable()
 export class WorkspacesService {
@@ -94,7 +96,7 @@ export class WorkspacesService {
     const membership = WorkspaceFactory.createMembership(
       user.id,
       workspaceId,
-      undefined, // MEMBER
+      undefined, // MEMBER by default
       WorkspaceMemberStatus.PENDING,
     );
 
@@ -111,5 +113,22 @@ export class WorkspacesService {
 
     const acceptedMembership = membership.accept();
     await this.workspaceMemberRepository.updateMember(acceptedMembership);
+  }
+
+  async updateMemberRole(command: UpdateMemberRoleCommand): Promise<void> {
+    const { userId, workspaceId, newRole } = command;
+
+    const membership = await this.workspaceMemberRepository.findMember(
+      userId,
+      workspaceId,
+    );
+
+    const updatedMembership = membership.updateRole(newRole);
+    await this.workspaceMemberRepository.updateMember(updatedMembership);
+  }
+
+  async removeMember(command: RemoveMemberCommand): Promise<void> {
+    const { userId, workspaceId } = command;
+    await this.workspaceMemberRepository.deleteMember(userId, workspaceId);
   }
 }
