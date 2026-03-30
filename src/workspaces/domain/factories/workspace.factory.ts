@@ -39,7 +39,7 @@ export class WorkspaceFactory {
     userId: string,
     workspaceId: string,
     role: WorkspaceRole = WorkspaceRole.MEMBER,
-    status: WorkspaceMemberStatus = WorkspaceMemberStatus.ACTIVE,
+    status: WorkspaceMemberStatus = WorkspaceMemberStatus.PENDING,
   ): WorkspaceMember {
     const now = new Date();
     return new WorkspaceMember(userId, workspaceId, role, status, now, now);

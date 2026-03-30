@@ -2,11 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { WorkspaceRepositoryPort } from './ports/workspace-repository.port';
 import { WorkspaceFactory } from '../domain/factories/workspace.factory';
 import { Workspace } from '../domain/workspace';
+import { WorkspaceMember } from '../domain/workspace-member';
+import { WorkspaceMemberStatus } from '../domain/enums/workspace-member-status.enum';
 import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { UpdateWorkspaceCommand } from './commands/update-workspace.command';
 import { UsersService } from '../../users/application/users.service';
 import { CreateUserCommand } from '../../users/application/commands/create-user.command';
 import { WorkspaceMemberRepositoryPort } from './ports/workspace-member-repository.port';
+import { InviteMemberCommand } from './commands/invite-member.command';
+import { AcceptInvitationCommand } from './commands/accept-invitation.command';
 
 @Injectable()
 export class WorkspacesService {
@@ -27,7 +31,8 @@ export class WorkspacesService {
     );
 
     await this.workspaceRepository.save(workspace);
-    await this.workspaceMemberRepository.saveMember([membership]);
+
+    const memberships: WorkspaceMember[] = [membership];
 
     if (command.invitedEmails && command.invitedEmails.length > 0) {
       for (const email of command.invitedEmails) {
@@ -37,16 +42,16 @@ export class WorkspacesService {
           // Create ghost user
           user = await this.usersService.create(new CreateUserCommand(email));
         }
-        if (user.email === email) continue; // Skip your own invitation.
 
-        const inviteeMembership = WorkspaceFactory.createMembership(
-          user.id,
-          workspace.id,
+        if (user.id === command.userId) continue; // Skip if already the owner
+
+        memberships.push(
+          WorkspaceFactory.createMembership(user.id, workspace.id),
         );
-
-        await this.workspaceMemberRepository.saveMember([inviteeMembership]);
       }
     }
+
+    await this.workspaceMemberRepository.saveMember(memberships);
 
     return workspace;
   }
@@ -76,5 +81,35 @@ export class WorkspacesService {
     // Verify participation and existence
     await this.workspaceRepository.findById(userId, id);
     await this.workspaceRepository.remove(id);
+  }
+
+  async inviteMember(command: InviteMemberCommand): Promise<void> {
+    const { email, workspaceId } = command;
+    let user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      user = await this.usersService.create(new CreateUserCommand(email));
+    }
+
+    const membership = WorkspaceFactory.createMembership(
+      user.id,
+      workspaceId,
+      undefined, // MEMBER
+      WorkspaceMemberStatus.PENDING,
+    );
+
+    await this.workspaceMemberRepository.saveMember([membership]);
+  }
+
+  async acceptInvitation(command: AcceptInvitationCommand): Promise<void> {
+    const { userId, workspaceId } = command;
+
+    const membership = await this.workspaceMemberRepository.findMember(
+      userId,
+      workspaceId,
+    );
+
+    const acceptedMembership = membership.accept();
+    await this.workspaceMemberRepository.updateMember(acceptedMembership);
   }
 }
