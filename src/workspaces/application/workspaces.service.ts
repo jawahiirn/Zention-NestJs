@@ -6,12 +6,15 @@ import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { UpdateWorkspaceCommand } from './commands/update-workspace.command';
 import { UsersService } from '../../users/application/users.service';
 import { CreateUserCommand } from '../../users/application/commands/create-user.command';
+import { WorkspaceMemberRepositoryPort } from './ports/workspace-member-repository.port';
 
 @Injectable()
 export class WorkspacesService {
   constructor(
     @Inject(WorkspaceRepositoryPort)
     private readonly workspaceRepository: WorkspaceRepositoryPort,
+    @Inject(WorkspaceMemberRepositoryPort)
+    private readonly workspaceMemberRepository: WorkspaceMemberRepositoryPort,
     private readonly usersService: UsersService,
   ) {}
 
@@ -24,7 +27,7 @@ export class WorkspacesService {
     );
 
     await this.workspaceRepository.save(workspace);
-    await this.workspaceRepository.saveMember(membership);
+    await this.workspaceMemberRepository.saveMember(membership);
 
     if (command.invitedEmails && command.invitedEmails.length > 0) {
       for (const email of command.invitedEmails) {
@@ -41,7 +44,7 @@ export class WorkspacesService {
           workspace.id,
         );
 
-        await this.workspaceRepository.saveMember(inviteeMembership);
+        await this.workspaceMemberRepository.saveMember(inviteeMembership);
       }
     }
 

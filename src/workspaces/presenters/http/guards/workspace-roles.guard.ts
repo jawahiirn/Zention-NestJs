@@ -11,13 +11,14 @@ import { REQUEST_USER_KEY } from '../../../../common/constants/iam.constants';
 import { WorkspaceRole } from '../../../domain/enums/workspace-role.enum';
 import { WorkspaceRepositoryPort } from '../../../application/ports/workspace-repository.port';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { WorkspaceMemberRepositoryPort } from '../../../application/ports/workspace-member-repository.port';
 
 @Injectable()
 export class WorkspaceRolesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    @Inject(WorkspaceRepositoryPort)
-    private readonly workspaceRepository: WorkspaceRepositoryPort,
+    @Inject(WorkspaceMemberRepositoryPort)
+    private readonly workspaceMemberRepository: WorkspaceMemberRepositoryPort,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,7 +40,7 @@ export class WorkspaceRolesGuard implements CanActivate {
     }
 
     try {
-      const member = await this.workspaceRepository.findMember(
+      const member = await this.workspaceMemberRepository.findMember(
         user.sub,
         workspaceId,
       );
