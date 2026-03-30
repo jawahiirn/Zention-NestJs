@@ -51,9 +51,11 @@ export class WorkspaceRepository
     );
   }
 
-  async saveMember(member: WorkspaceMember): Promise<void> {
-    const entity = WorkspaceMemberMapper.toPersistence(member);
-    await this.memberRepository.save(entity);
+  async saveMember(members: WorkspaceMember[]): Promise<void> {
+    const entities = members.map((member) =>
+      WorkspaceMemberMapper.toPersistence(member),
+    );
+    await this.memberRepository.save(entities);
   }
 
   async updateMember(member: WorkspaceMember): Promise<void> {

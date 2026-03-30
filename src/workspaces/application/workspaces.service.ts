@@ -27,7 +27,7 @@ export class WorkspacesService {
     );
 
     await this.workspaceRepository.save(workspace);
-    await this.workspaceMemberRepository.saveMember(membership);
+    await this.workspaceMemberRepository.saveMember([membership]);
 
     if (command.invitedEmails && command.invitedEmails.length > 0) {
       for (const email of command.invitedEmails) {
@@ -44,7 +44,7 @@ export class WorkspacesService {
           workspace.id,
         );
 
-        await this.workspaceMemberRepository.saveMember(inviteeMembership);
+        await this.workspaceMemberRepository.saveMember([inviteeMembership]);
       }
     }
 

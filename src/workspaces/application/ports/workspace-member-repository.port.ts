@@ -9,7 +9,7 @@ export abstract class WorkspaceMemberRepositoryPort {
   abstract findMembersByWorkspace(
     workspaceId: string,
   ): Promise<WorkspaceMember[]>;
-  abstract saveMember(member: WorkspaceMember): Promise<void>;
+  abstract saveMember(members: Array<WorkspaceMember>): Promise<void>;
   abstract findMember(
     userId: string,
     workspaceId: string,
