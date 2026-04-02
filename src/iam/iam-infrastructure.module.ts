@@ -41,4 +41,4 @@ import { RefreshTokenIdsStorage } from './infrastructure/storage/refresh-token.s
   controllers: [AuthenticationController, SocialAuthenticationController],
   exports: [RefreshTokenStoragePort],
 })
-export class IamInfrastructureModule {}
+export class IamModule {}
