@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, ConflictException, Logger } from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
@@ -16,6 +16,8 @@ import { CreateUserCommand } from '../../users/application/commands/create-user.
 
 @Injectable()
 export class AuthenticationService {
+  private readonly logger = new Logger(AuthenticationService.name);
+
   constructor(
     private readonly hashingService: HashingService,
     private readonly usersService: UsersService,
@@ -46,6 +48,7 @@ export class AuthenticationService {
     await this.usersService.create(
       new CreateUserCommand(email, hashedPassword, fullName),
     );
+    this.logger.log(`User created: ${email}`);
   }
 
   async signIn(
@@ -65,6 +68,7 @@ export class AuthenticationService {
       throw new UnauthorizedException('Password does not match');
     }
 
+    this.logger.log(`User signed in: ${user.email}`);
     return await this.generateTokens(user);
   }
 
