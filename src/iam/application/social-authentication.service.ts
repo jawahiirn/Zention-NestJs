@@ -40,7 +40,9 @@ export class SocialAuthenticationService implements OnModuleInit {
       } = loginTicket.getPayload() || {};
 
       if (!googleId || !email || !fullName) {
-        throw new Error('Google login failed due to missing variables.');
+        throw new UnauthorizedException(
+          'Google login failed due to missing variables.',
+        );
       }
 
       try {
@@ -71,7 +73,7 @@ export class SocialAuthenticationService implements OnModuleInit {
       if (err.code === pgUniqueViolationErrorCode) {
         throw new ConflictException();
       } else {
-        throw new Error(err.message);
+        throw new UnauthorizedException(err.message);
       }
     }
   }
