@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
@@ -40,7 +40,7 @@ export class AuthenticationService {
         return;
       }
       // REAL USER ALREADY EXISTS
-      throw new Error('User already exists');
+      throw new ConflictException('User already exists');
     }
 
     await this.usersService.create(
@@ -79,16 +79,8 @@ export class AuthenticationService {
         issuer: this.jwtConfiguration.issuer,
       });
       const user = await this.usersService.findById(sub);
-      const isValid = await this.refreshTokenIdsStorage.validate(
-        user.id,
-        refreshTokenId,
-      );
-
-      if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(user.id);
-      } else {
-        throw new Error('Refresh token invalid');
-      }
+      await this.refreshTokenIdsStorage.validate(user.id, refreshTokenId);
+      await this.refreshTokenIdsStorage.invalidate(user.id);
 
       return await this.generateTokens(user);
     } catch (error) {
