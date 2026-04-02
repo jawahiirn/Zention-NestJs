@@ -6,6 +6,9 @@ import { Auth } from './decorators/auth.decorator';
 import { AuthType } from '../../../common/enums/auth-type.enum';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('auth')
 @Auth(AuthType.None)
 @Controller('auth')
 export class AuthenticationController {

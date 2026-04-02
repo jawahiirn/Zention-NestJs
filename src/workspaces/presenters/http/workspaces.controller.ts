@@ -18,6 +18,10 @@ import { WorkspaceRolesGuard } from './guards/workspace-roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { WorkspaceRole } from '../../domain/enums/workspace-role.enum';
 
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+@ApiTags('workspaces')
+@ApiBearerAuth()
 @Controller('workspace')
 @Auth(AuthType.Bearer)
 @UseGuards(WorkspaceRolesGuard)
