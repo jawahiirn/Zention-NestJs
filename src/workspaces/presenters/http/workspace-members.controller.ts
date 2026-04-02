@@ -21,6 +21,10 @@ import { UpdateMemberRoleCommand } from '../../application/commands/update-membe
 import { RemoveMemberCommand } from '../../application/commands/remove-member.command';
 import { AcceptInvitationCommand } from '../../application/commands/accept-invitation.command';
 
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+@ApiTags('workspace-members')
+@ApiBearerAuth()
 @Controller('workspace/:id/members')
 @Auth(AuthType.Bearer)
 @UseGuards(WorkspaceRolesGuard)

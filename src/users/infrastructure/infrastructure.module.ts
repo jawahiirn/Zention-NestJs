@@ -14,4 +14,4 @@ import { UserRepositoryPort } from '../application/ports/user-repository.port';
   ],
   exports: [TypeOrmModule, UserRepositoryPort],
 })
-export class InfrastructureModule {}
+export class UsersInfrastructureModule {}

@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, ConflictException, Logger } from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
@@ -16,6 +16,8 @@ import { CreateUserCommand } from '../../users/application/commands/create-user.
 
 @Injectable()
 export class AuthenticationService {
+  private readonly logger = new Logger(AuthenticationService.name);
+
   constructor(
     private readonly hashingService: HashingService,
     private readonly usersService: UsersService,
@@ -40,12 +42,13 @@ export class AuthenticationService {
         return;
       }
       // REAL USER ALREADY EXISTS
-      throw new Error('User already exists');
+      throw new ConflictException('User already exists');
     }
 
     await this.usersService.create(
       new CreateUserCommand(email, hashedPassword, fullName),
     );
+    this.logger.log(`User created: ${email}`);
   }
 
   async signIn(
@@ -65,6 +68,7 @@ export class AuthenticationService {
       throw new UnauthorizedException('Password does not match');
     }
 
+    this.logger.log(`User signed in: ${user.email}`);
     return await this.generateTokens(user);
   }
 
@@ -79,16 +83,8 @@ export class AuthenticationService {
         issuer: this.jwtConfiguration.issuer,
       });
       const user = await this.usersService.findById(sub);
-      const isValid = await this.refreshTokenIdsStorage.validate(
-        user.id,
-        refreshTokenId,
-      );
-
-      if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(user.id);
-      } else {
-        throw new Error('Refresh token invalid');
-      }
+      await this.refreshTokenIdsStorage.validate(user.id, refreshTokenId);
+      await this.refreshTokenIdsStorage.invalidate(user.id);
 
       return await this.generateTokens(user);
     } catch (error) {

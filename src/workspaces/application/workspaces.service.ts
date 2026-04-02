@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { WorkspaceRepositoryPort } from './ports/workspace-repository.port';
 import { WorkspaceFactory } from '../domain/factories/workspace.factory';
 import { Workspace } from '../domain/workspace';
@@ -16,6 +16,8 @@ import { RemoveMemberCommand } from './commands/remove-member.command';
 
 @Injectable()
 export class WorkspacesService {
+  private readonly logger = new Logger(WorkspacesService.name);
+
   constructor(
     @Inject(WorkspaceRepositoryPort)
     private readonly workspaceRepository: WorkspaceRepositoryPort,
@@ -54,6 +56,7 @@ export class WorkspacesService {
     }
 
     await this.workspaceMemberRepository.saveMember(memberships);
+    this.logger.log(`Workspace created: ${workspace.id} by user: ${command.userId}`);
 
     return workspace;
   }
@@ -101,6 +104,7 @@ export class WorkspacesService {
     );
 
     await this.workspaceMemberRepository.saveMember([membership]);
+    this.logger.log(`User ${user.id} invited to workspace: ${workspaceId} by user: ${command.invitedBy}`);
   }
 
   async acceptInvitation(command: AcceptInvitationCommand): Promise<void> {

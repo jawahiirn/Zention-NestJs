@@ -24,4 +24,4 @@ import { WorkspaceMemberRepositoryPort } from '../application/ports/workspace-me
     WorkspaceMemberRepositoryPort,
   ],
 })
-export class InfrastructureModule {}
+export class WorkspacesInfrastructureModule {}
