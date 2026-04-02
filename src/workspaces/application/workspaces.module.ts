@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { WorkspacesController } from '../presenters/http/workspaces.controller';
 import { WorkspaceMembersController } from '../presenters/http/workspace-members.controller';
-import { InfrastructureModule } from '../infrastructure/infrastructure.module';
+import { WorkspacesInfrastructureModule } from '../infrastructure/infrastructure.module';
 import { UsersModule } from '../../users/application/users.module';
 
 @Module({
-  imports: [InfrastructureModule, UsersModule],
+  imports: [WorkspacesInfrastructureModule, UsersModule],
   controllers: [WorkspacesController, WorkspaceMembersController],
   providers: [WorkspacesService],
 })

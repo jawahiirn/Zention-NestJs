@@ -22,13 +22,15 @@ export class SocialAuthenticationService implements OnModuleInit {
     private readonly usersService: UsersService,
   ) {}
 
-  onModuleInit(): any {
+  onModuleInit(): void {
     const clientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get<string>('GOOGLE_CLIENT_SECRET');
     this.oauth2Client = new OAuth2Client(clientId, clientSecret);
   }
 
-  async authenticate(token: string): Promise<any> {
+  async authenticate(
+    token: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const loginTicket = await this.oauth2Client.verifyIdToken({
         idToken: token,
