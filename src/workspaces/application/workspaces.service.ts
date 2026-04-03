@@ -13,6 +13,7 @@ import { InviteMemberCommand } from './commands/invite-member.command';
 import { AcceptInvitationCommand } from './commands/accept-invitation.command';
 import { UpdateMemberRoleCommand } from './commands/update-member-role.command';
 import { RemoveMemberCommand } from './commands/remove-member.command';
+import { FindWorkspaceMembersCommand } from './commands/find-workspace-members.command';
 
 @Injectable()
 export class WorkspacesService {
@@ -56,15 +57,23 @@ export class WorkspacesService {
     }
 
     await this.workspaceMemberRepository.saveMember(memberships);
-    this.logger.log(`Workspace created: ${workspace.id} by user: ${command.userId}`);
+    this.logger.log(
+      `Workspace created: ${workspace.id} by user: ${command.userId}`,
+    );
 
     return workspace;
   }
 
+  /*
+   * Finds all workspaces belonging to the user
+   * */
   findAll(userId: string): Promise<Workspace[]> {
     return this.workspaceRepository.findAllByUserId(userId);
   }
 
+  /*
+   * Find a workspace belonging to User (ID), of Workspace (ID)
+   * */
   findOne(userId: string, id: string): Promise<Workspace> {
     return this.workspaceRepository.findById(userId, id);
   }
@@ -104,7 +113,9 @@ export class WorkspacesService {
     );
 
     await this.workspaceMemberRepository.saveMember([membership]);
-    this.logger.log(`User ${user.id} invited to workspace: ${workspaceId} by user: ${command.invitedBy}`);
+    this.logger.log(
+      `User ${user.id} invited to workspace: ${workspaceId} by user: ${command.invitedBy}`,
+    );
   }
 
   async acceptInvitation(command: AcceptInvitationCommand): Promise<void> {
@@ -134,5 +145,14 @@ export class WorkspacesService {
   async removeMember(command: RemoveMemberCommand): Promise<void> {
     const { userId, workspaceId } = command;
     await this.workspaceMemberRepository.deleteMember(userId, workspaceId);
+  }
+
+  async findMembersByWorkspace(
+    command: FindWorkspaceMembersCommand,
+  ): Promise<WorkspaceMember[]> {
+    const { workspaceId } = command;
+    return await this.workspaceMemberRepository.findMembersByWorkspace(
+      workspaceId,
+    );
   }
 }

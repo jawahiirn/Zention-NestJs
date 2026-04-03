@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -22,6 +23,7 @@ import { RemoveMemberCommand } from '../../application/commands/remove-member.co
 import { AcceptInvitationCommand } from '../../application/commands/accept-invitation.command';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FindWorkspaceMembersCommand } from '../../application/commands/find-workspace-members.command';
 
 @ApiTags('workspace-members')
 @ApiBearerAuth()
@@ -77,6 +79,13 @@ export class WorkspaceMembersController {
   ) {
     return this.workspacesService.removeMember(
       new RemoveMemberCommand(targetUserId, workspaceId),
+    );
+  }
+
+  @Get()
+  getMembers(@Param('id') workspaceId: string) {
+    return this.workspacesService.findMembersByWorkspace(
+      new FindWorkspaceMembersCommand(workspaceId),
     );
   }
 }
