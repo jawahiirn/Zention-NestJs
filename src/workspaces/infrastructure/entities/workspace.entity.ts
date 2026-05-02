@@ -20,6 +20,13 @@ export class WorkspaceEntity {
   @Column({ type: 'varchar', nullable: true })
   iconColor: string | null;
 
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+    default: {},
+  })
+  settings: Record<string, any>;
+
   @CreateDateColumn()
   createdAt: Date;
 

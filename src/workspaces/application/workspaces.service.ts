@@ -14,6 +14,7 @@ import { AcceptInvitationCommand } from './commands/accept-invitation.command';
 import { UpdateMemberRoleCommand } from './commands/update-member-role.command';
 import { RemoveMemberCommand } from './commands/remove-member.command';
 import { FindWorkspaceMembersCommand } from './commands/find-workspace-members.command';
+import { WorkspacePurpose } from '../domain/enums/workspace-purpose.enum';
 
 @Injectable()
 export class WorkspacesService {
@@ -31,6 +32,7 @@ export class WorkspacesService {
     const { workspace, membership } = WorkspaceFactory.create(
       command.name,
       command.userId,
+      command.config,
       command.icon,
       command.iconColor,
     );
@@ -64,16 +66,36 @@ export class WorkspacesService {
     return workspace;
   }
 
-  /*
-   * Finds all workspaces belonging to the user
-   * */
+  getCreationMetadata() {
+    return {
+      purposes: [
+        {
+          id: WorkspacePurpose.WORK,
+          label: 'Work',
+          description: 'Project management and team collaboration',
+        },
+        {
+          id: WorkspacePurpose.SCHOOL,
+          label: 'School',
+          description: 'Assignments, notes and study groups',
+        },
+        {
+          id: WorkspacePurpose.PERSONAL,
+          label: 'Personal',
+          description: 'Individual tasks and private projects',
+        },
+      ],
+      integrations: [
+        { id: 'slack', name: 'Slack', icon: 'slack-icon-url' },
+        { id: 'github', name: 'GitHub', icon: 'github-icon-url' },
+      ],
+    };
+  }
+
   findAll(userId: string): Promise<Workspace[]> {
     return this.workspaceRepository.findAllByUserId(userId);
   }
 
-  /*
-   * Find a workspace belonging to User (ID), of Workspace (ID)
-   * */
   findOne(userId: string, id: string): Promise<Workspace> {
     return this.workspaceRepository.findById(userId, id);
   }
