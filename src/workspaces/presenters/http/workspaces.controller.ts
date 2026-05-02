@@ -33,10 +33,21 @@ export class WorkspacesController {
     @Body() createWorkspaceDto: CreateWorkspaceDto,
     @ActiveUser('sub') userId: string,
   ) {
+    const { name, config, icon, iconColor, invitedEmails } = createWorkspaceDto;
     return this.workspacesService.create({
-      ...createWorkspaceDto,
+      name,
       userId: userId!,
+      config,
+      icon,
+      iconColor,
+      invitedEmails,
     });
+  }
+
+  @Get('config')
+  @Auth(AuthType.None)
+  getConfig() {
+    return this.workspacesService.getCreationMetadata();
   }
 
   @Get()

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { IsObject, IsOptional, IsString, MinLength } from 'class-validator';
+import type { WorkspaceSettings } from '../../../domain/interfaces/workspace-settings.interface';
 
 export class UpdateWorkspaceDto {
   @ApiProperty({ example: 'Updated Workspace', required: false })
@@ -17,4 +18,9 @@ export class UpdateWorkspaceDto {
   @IsString()
   @IsOptional()
   iconColor?: string;
+
+  @ApiProperty({ example: { theme: 'light' }, required: false })
+  @IsObject()
+  @IsOptional()
+  settings?: WorkspaceSettings;
 }
