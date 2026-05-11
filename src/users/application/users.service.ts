@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepositoryPort } from './ports/user-repository.port';
+import { IdGeneratorPort } from '../../common/application/ports/id-generator.port';
 import { User } from '../domain/user';
 import { UserFactory } from '../domain/factories/user.factory';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -9,10 +10,15 @@ export class UsersService {
   constructor(
     @Inject(UserRepositoryPort)
     private readonly userRepository: UserRepositoryPort,
+    @Inject(IdGeneratorPort)
+    private readonly idGenerator: IdGeneratorPort,
   ) {}
 
   async create(command: CreateUserCommand): Promise<User> {
-    const user = UserFactory.create(command);
+    const user = UserFactory.create({
+      ...command,
+      id: this.idGenerator.generate(),
+    });
     await this.userRepository.save(user);
     return user;
   }

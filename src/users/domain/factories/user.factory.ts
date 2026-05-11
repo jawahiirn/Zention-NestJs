@@ -1,10 +1,9 @@
-import { randomUUID } from 'node:crypto';
 import { User } from '../user';
 
 export class UserFactory {
   static create(params: {
     email: string;
-    id?: string;
+    id: string;
     password?: string | null;
     fullName?: string;
     googleId?: string | null;
@@ -15,7 +14,7 @@ export class UserFactory {
     return new User(
       params.email,
       params.password ?? null,
-      params.id ?? randomUUID(),
+      params.id,
       params.fullName ?? '',
       now,
       now,

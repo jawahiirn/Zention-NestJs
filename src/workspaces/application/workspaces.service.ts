@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { WorkspaceRepositoryPort } from './ports/workspace-repository.port';
+import { IdGeneratorPort } from '../../common/application/ports/id-generator.port';
 import { WorkspaceFactory } from '../domain/factories/workspace.factory';
 import { Workspace } from '../domain/workspace';
 import { WorkspaceMember } from '../domain/workspace-member';
@@ -25,13 +26,17 @@ export class WorkspacesService {
     private readonly workspaceRepository: WorkspaceRepositoryPort,
     @Inject(WorkspaceMemberRepositoryPort)
     private readonly workspaceMemberRepository: WorkspaceMemberRepositoryPort,
+    @Inject(IdGeneratorPort)
+    private readonly idGenerator: IdGeneratorPort,
     private readonly usersService: UsersService,
   ) {}
 
   async create(command: CreateWorkspaceCommand): Promise<Workspace> {
     const { workspace, membership } = WorkspaceFactory.create(
+      this.idGenerator.generate(),
       command.name,
       command.userId,
+      this.idGenerator.generate(),
       command.config,
       command.icon,
       command.iconColor,
@@ -53,7 +58,11 @@ export class WorkspacesService {
         if (user.id === command.userId) continue; // Skip if already the owner
 
         memberships.push(
-          WorkspaceFactory.createMembership(user.id, workspace.id),
+          WorkspaceFactory.createMembership(
+            this.idGenerator.generate(),
+            user.id,
+            workspace.id,
+          ),
         );
       }
     }
@@ -128,6 +137,7 @@ export class WorkspacesService {
     }
 
     const membership = WorkspaceFactory.createMembership(
+      this.idGenerator.generate(),
       user.id,
       workspaceId,
       undefined, // MEMBER by default
