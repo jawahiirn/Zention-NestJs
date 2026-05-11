@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { Workspace } from '../workspace';
 import { WorkspaceMember } from '../workspace-member';
 import { WorkspaceRole } from '../enums/workspace-role.enum';
@@ -8,17 +7,18 @@ import { WorkspaceSettings } from '../interfaces/workspace-settings.interface';
 
 export class WorkspaceFactory {
   static create(
+    id: string,
     name: string,
     ownerId: string,
+    ownerMembershipId: string,
     config: WorkspaceSettings,
     icon?: string,
     iconColor?: string,
   ): { workspace: Workspace; membership: WorkspaceMember } {
-    const workspaceId = randomUUID();
     const now = new Date();
 
     const workspace = new Workspace(
-      workspaceId,
+      id,
       name,
       config,
       icon ?? '',
@@ -28,8 +28,9 @@ export class WorkspaceFactory {
     );
 
     const membership = new WorkspaceMember(
+      ownerMembershipId,
       ownerId,
-      workspaceId,
+      id,
       WorkspaceRole.OWNER,
       WorkspaceMemberStatus.ACTIVE,
       now,
@@ -40,12 +41,13 @@ export class WorkspaceFactory {
   }
 
   static createMembership(
+    id: string,
     userId: string,
     workspaceId: string,
     role: WorkspaceRole = WorkspaceRole.MEMBER,
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.PENDING,
   ): WorkspaceMember {
     const now = new Date();
-    return new WorkspaceMember(userId, workspaceId, role, status, now, now);
+    return new WorkspaceMember(id, userId, workspaceId, role, status, now, now);
   }
 }

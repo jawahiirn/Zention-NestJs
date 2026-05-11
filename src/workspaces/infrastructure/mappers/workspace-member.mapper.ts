@@ -4,6 +4,7 @@ import { WorkspaceMemberEntity } from '../entities/workspace-member.entity';
 export class WorkspaceMemberMapper {
   static toDomain(entity: WorkspaceMemberEntity): WorkspaceMember {
     return new WorkspaceMember(
+      entity.id,
       entity.userId,
       entity.workspaceId,
       entity.role,
@@ -15,6 +16,7 @@ export class WorkspaceMemberMapper {
 
   static toPersistence(domain: WorkspaceMember): WorkspaceMemberEntity {
     const entity = new WorkspaceMemberEntity();
+    entity.id = domain.id;
     entity.userId = domain.userId;
     entity.workspaceId = domain.workspaceId;
     entity.role = domain.role;

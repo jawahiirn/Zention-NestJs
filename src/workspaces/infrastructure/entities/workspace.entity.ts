@@ -8,7 +8,7 @@ import {
 
 @Entity('workspaces')
 export class WorkspaceEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn({ type: 'bigint' })
   id: string;
 
   @Column()

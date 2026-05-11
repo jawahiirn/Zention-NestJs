@@ -1,7 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { IdGeneratorPort } from '../common/application/ports/id-generator.port';
+import { SnowflakeIdGeneratorAdapter } from './id-generation/snowflake-id-generator.adapter';
 
+@Global()
 @Module({})
 export class CoreModule {
   static forRoot() {
@@ -20,9 +23,18 @@ export class CoreModule {
           autoLoadEntities: true,
           synchronize: true,
         }),]
+    const providers = [
+      {
+        provide: IdGeneratorPort,
+        useClass: SnowflakeIdGeneratorAdapter,
+      },
+    ];
+
     return {
       module: CoreModule,
       imports,
+      providers,
+      exports: [IdGeneratorPort],
     };
   }
 }
