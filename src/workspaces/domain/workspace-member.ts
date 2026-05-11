@@ -3,6 +3,7 @@ import { WorkspaceMemberStatus } from './enums/workspace-member-status.enum';
 
 export class WorkspaceMember {
   constructor(
+    public readonly id: string,
     public readonly userId: string,
     public readonly workspaceId: string,
     public readonly role: WorkspaceRole,
@@ -13,6 +14,7 @@ export class WorkspaceMember {
 
   updateRole(newRole: WorkspaceRole): WorkspaceMember {
     return new WorkspaceMember(
+      this.id,
       this.userId,
       this.workspaceId,
       newRole,
@@ -24,6 +26,7 @@ export class WorkspaceMember {
 
   accept(): WorkspaceMember {
     return new WorkspaceMember(
+      this.id,
       this.userId,
       this.workspaceId,
       this.role,

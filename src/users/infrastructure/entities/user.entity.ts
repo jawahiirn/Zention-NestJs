@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn({ type: 'bigint' })
   id: string;
 
   @Column({ unique: true })
