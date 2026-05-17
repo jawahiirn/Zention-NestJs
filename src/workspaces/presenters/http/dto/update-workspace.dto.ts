@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsObject, IsOptional, IsString, MinLength } from 'class-validator';
-import type { WorkspaceSettings } from '../../../domain/interfaces/workspace-settings.interface';
+import type { WorkspaceSettings } from '../../../domain/value-objects/workspace-settings.value-object';
 
 export class UpdateWorkspaceDto {
   @ApiProperty({ example: 'Updated Workspace', required: false })

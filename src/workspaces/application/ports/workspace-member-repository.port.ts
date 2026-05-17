@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { WorkspaceMember } from '../../domain/workspace-member';
-import { Workspace } from '../../domain/workspace';
 
 @Injectable()
 export abstract class WorkspaceMemberRepositoryPort {

@@ -15,7 +15,7 @@ import { AcceptInvitationCommand } from './commands/accept-invitation.command';
 import { UpdateMemberRoleCommand } from './commands/update-member-role.command';
 import { RemoveMemberCommand } from './commands/remove-member.command';
 import { FindWorkspaceMembersCommand } from './commands/find-workspace-members.command';
-import { WorkspacePurpose } from '../domain/enums/workspace-purpose.enum';
+import { WorkspaceConfigPort } from './ports/workspace-config.port';
 
 @Injectable()
 export class WorkspacesService {
@@ -29,6 +29,8 @@ export class WorkspacesService {
     @Inject(IdGeneratorPort)
     private readonly idGenerator: IdGeneratorPort,
     private readonly usersService: UsersService,
+    @Inject(WorkspaceConfigPort)
+    private readonly workspaceConfig: WorkspaceConfigPort,
   ) {}
 
   async create(command: CreateWorkspaceCommand): Promise<Workspace> {
@@ -76,29 +78,7 @@ export class WorkspacesService {
   }
 
   getCreationMetadata() {
-    return {
-      purposes: [
-        {
-          id: WorkspacePurpose.WORK,
-          label: 'Work',
-          description: 'Project management and team collaboration',
-        },
-        {
-          id: WorkspacePurpose.SCHOOL,
-          label: 'School',
-          description: 'Assignments, notes and study groups',
-        },
-        {
-          id: WorkspacePurpose.PERSONAL,
-          label: 'Personal',
-          description: 'Individual tasks and private projects',
-        },
-      ],
-      integrations: [
-        { id: 'slack', name: 'Slack', icon: 'slack-icon-url' },
-        { id: 'github', name: 'GitHub', icon: 'github-icon-url' },
-      ],
-    };
+    return this.workspaceConfig.getCreationMetadata();
   }
 
   findAll(userId: string): Promise<Workspace[]> {
@@ -124,8 +104,9 @@ export class WorkspacesService {
 
   async remove(id: string, userId: string): Promise<void> {
     // Verify participation and existence
-    await this.workspaceRepository.findById(userId, id);
-    await this.workspaceRepository.remove(id);
+    const workspace = await this.workspaceRepository.findById(userId, id);
+    const deletedWorkspace = workspace.delete();
+    await this.workspaceRepository.save(deletedWorkspace);
   }
 
   async inviteMember(command: InviteMemberCommand): Promise<void> {

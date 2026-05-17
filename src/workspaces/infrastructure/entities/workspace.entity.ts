@@ -27,6 +27,9 @@ export class WorkspaceEntity {
   })
   settings: Record<string, any>;
 
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
