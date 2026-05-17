@@ -31,6 +31,7 @@ export class WorkspaceRepository
     await this.findMember(userId, workspaceId);
     const entity = await this.workspaceRepository.findOneBy({
       id: workspaceId,
+      isActive: true,
     });
     if (!entity) {
       throw new NotFoundException(
@@ -42,7 +43,12 @@ export class WorkspaceRepository
 
   async findAllByUserId(userId: string): Promise<Workspace[]> {
     const memberEntities = await this.memberRepository.find({
-      where: { userId },
+      where: {
+        userId,
+        workspace: {
+          isActive: true,
+        },
+      },
       relations: ['workspace'],
     });
 
@@ -89,6 +95,6 @@ export class WorkspaceRepository
   }
 
   async remove(workspaceId: string): Promise<void> {
-    await this.workspaceRepository.delete({ id: workspaceId });
+    await this.workspaceRepository.update({ id: workspaceId }, { isActive: false });
   }
 }

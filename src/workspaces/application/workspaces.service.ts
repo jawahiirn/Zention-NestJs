@@ -104,8 +104,9 @@ export class WorkspacesService {
 
   async remove(id: string, userId: string): Promise<void> {
     // Verify participation and existence
-    await this.workspaceRepository.findById(userId, id);
-    await this.workspaceRepository.remove(id);
+    const workspace = await this.workspaceRepository.findById(userId, id);
+    const deletedWorkspace = workspace.delete();
+    await this.workspaceRepository.save(deletedWorkspace);
   }
 
   async inviteMember(command: InviteMemberCommand): Promise<void> {

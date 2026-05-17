@@ -11,6 +11,7 @@ export class Workspace {
     public readonly iconColor: string | undefined,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly isActive: boolean = true,
   ) {
     this.settings = settings instanceof WorkspaceSettings
       ? settings
@@ -37,6 +38,20 @@ export class Workspace {
       params.iconColor ?? this.iconColor,
       this.createdAt,
       new Date(),
+      this.isActive,
+    );
+  }
+
+  delete(): Workspace {
+    return new Workspace(
+      this.id,
+      this.name,
+      this.settings,
+      this.icon,
+      this.iconColor,
+      this.createdAt,
+      new Date(),
+      false,
     );
   }
 }

@@ -13,6 +13,7 @@ export class WorkspaceMapper {
       entity.iconColor ?? undefined,
       entity.createdAt,
       entity.updatedAt,
+      entity.isActive,
     );
   }
 
@@ -24,6 +25,7 @@ export class WorkspaceMapper {
     entity.settings = domain.settings ? domain.settings.toJSON() : {};
     entity.icon = domain.icon ?? null;
     entity.iconColor = domain.iconColor ?? null;
+    entity.isActive = domain.isActive;
     entity.createdAt = domain.createdAt;
     entity.updatedAt = domain.updatedAt;
     return entity;

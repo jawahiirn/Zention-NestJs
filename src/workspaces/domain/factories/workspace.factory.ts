@@ -25,6 +25,7 @@ export class WorkspaceFactory {
       iconColor ?? '',
       now,
       now,
+      true,
     );
 
     const membership = new WorkspaceMember(
