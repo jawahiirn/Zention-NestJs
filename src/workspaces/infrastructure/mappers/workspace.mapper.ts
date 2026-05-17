@@ -1,6 +1,6 @@
 import { Workspace } from '../../domain/workspace';
 import { WorkspaceEntity } from '../entities/workspace.entity';
-import { WorkspaceSettings } from '../../domain/interfaces/workspace-settings.interface';
+import { WorkspaceSettings } from '../../domain/value-objects/workspace-settings.value-object';
 
 export class WorkspaceMapper {
   static toDomain(entity: WorkspaceEntity): Workspace {
@@ -8,7 +8,7 @@ export class WorkspaceMapper {
     return new Workspace(
       entity.id,
       entity.name,
-      entity.settings as WorkspaceSettings,
+      entity.settings ? WorkspaceSettings.fromJSON(entity.settings) : (null as any),
       entity.icon ?? undefined,
       entity.iconColor ?? undefined,
       entity.createdAt,
@@ -21,7 +21,7 @@ export class WorkspaceMapper {
     const entity = new WorkspaceEntity();
     entity.id = domain.id;
     entity.name = domain.name;
-    entity.settings = domain.settings;
+    entity.settings = domain.settings ? domain.settings.toJSON() : {};
     entity.icon = domain.icon ?? null;
     entity.iconColor = domain.iconColor ?? null;
     entity.createdAt = domain.createdAt;

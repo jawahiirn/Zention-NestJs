@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
-import { WorkspaceSettings } from '../../../domain/interfaces/workspace-settings.interface';
+import { WorkspaceSettings } from '../../../domain/value-objects/workspace-settings.value-object';
 import { WorkspacePurpose } from '../../../domain/enums/workspace-purpose.enum';
 
 export class CreateWorkspaceDto {

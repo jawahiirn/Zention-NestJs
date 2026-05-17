@@ -3,7 +3,7 @@ import { WorkspaceMember } from '../workspace-member';
 import { WorkspaceRole } from '../enums/workspace-role.enum';
 import { WorkspaceMemberStatus } from '../enums/workspace-member-status.enum';
 
-import { WorkspaceSettings } from '../interfaces/workspace-settings.interface';
+import { WorkspaceSettings } from '../value-objects/workspace-settings.value-object';
 
 export class WorkspaceFactory {
   static create(

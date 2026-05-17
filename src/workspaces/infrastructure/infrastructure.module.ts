@@ -5,6 +5,8 @@ import { WorkspaceMemberEntity } from './entities/workspace-member.entity';
 import { WorkspaceRepository } from './repositories/workspace.repository';
 import { WorkspaceRepositoryPort } from '../application/ports/workspace-repository.port';
 import { WorkspaceMemberRepositoryPort } from '../application/ports/workspace-member-repository.port';
+import { WorkspaceConfigPort } from '../application/ports/workspace-config.port';
+import { WorkspaceConfigService } from './services/workspace-config.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([WorkspaceEntity, WorkspaceMemberEntity])],
@@ -17,11 +19,16 @@ import { WorkspaceMemberRepositoryPort } from '../application/ports/workspace-me
       provide: WorkspaceMemberRepositoryPort,
       useExisting: WorkspaceRepositoryPort,
     },
+    {
+      provide: WorkspaceConfigPort,
+      useClass: WorkspaceConfigService,
+    },
   ],
   exports: [
     TypeOrmModule,
     WorkspaceRepositoryPort,
     WorkspaceMemberRepositoryPort,
+    WorkspaceConfigPort,
   ],
 })
 export class WorkspacesInfrastructureModule {}

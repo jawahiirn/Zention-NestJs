@@ -1,4 +1,4 @@
-import { WorkspaceSettings } from '../../domain/interfaces/workspace-settings.interface';
+import { WorkspaceSettings } from '../../domain/value-objects/workspace-settings.value-object';
 
 export class CreateWorkspaceCommand {
   constructor(

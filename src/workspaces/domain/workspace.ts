@@ -1,15 +1,21 @@
-import { WorkspaceSettings } from './interfaces/workspace-settings.interface';
+import { WorkspaceSettings } from './value-objects/workspace-settings.value-object';
 
 export class Workspace {
+  readonly settings: WorkspaceSettings;
+
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly settings: WorkspaceSettings,
+    settings: WorkspaceSettings,
     public readonly icon: string | undefined,
     public readonly iconColor: string | undefined,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-  ) {}
+  ) {
+    this.settings = settings instanceof WorkspaceSettings
+      ? settings
+      : WorkspaceSettings.fromJSON(settings);
+  }
 
   update(params: {
     name?: string;
@@ -17,10 +23,16 @@ export class Workspace {
     icon?: string;
     iconColor?: string;
   }): Workspace {
+    const updatedSettings = params.settings
+      ? (params.settings instanceof WorkspaceSettings
+        ? params.settings
+        : WorkspaceSettings.fromJSON(params.settings))
+      : this.settings;
+
     return new Workspace(
       this.id,
       params.name ?? this.name,
-      params.settings ?? this.settings,
+      updatedSettings,
       params.icon ?? this.icon,
       params.iconColor ?? this.iconColor,
       this.createdAt,
