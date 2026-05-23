@@ -5,7 +5,7 @@ import { AuthenticationController } from './presenters/http/authentication.contr
 import { AuthenticationService } from './application/authentication.service';
 import { SocialAuthenticationController } from './presenters/http/social-authentication.controller';
 import { SocialAuthenticationService } from './application/social-authentication.service';
-import { UsersModule } from '../users/application/users.module';
+import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './infrastructure/config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
