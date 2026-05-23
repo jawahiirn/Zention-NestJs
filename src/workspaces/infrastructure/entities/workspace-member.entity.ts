@@ -1,7 +1,15 @@
-import { Column, Entity, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { WorkspaceRole } from '../../domain/enums/workspace-role.enum';
 import { WorkspaceMemberStatus } from '../../domain/enums/workspace-member-status.enum';
-import { UserEntity } from '../../../users/infrastructure/entities/user.entity';
+import { UserEntity } from '../../../users-old/infrastructure/entities/user.entity';
 import { WorkspaceEntity } from './workspace.entity';
 
 @Entity('workspace_members')
