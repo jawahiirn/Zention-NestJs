@@ -43,8 +43,11 @@ export class AuthenticationService {
     if (existingUser) {
       if (existingUser.isPending) {
         // ACTIVATE GHOST USER
-        const activatedUser = existingUser.activate(hashedPassword, fullName);
-        await this.usersService.update(activatedUser);
+        existingUser.password = hashedPassword;
+        if (fullName) existingUser.fullName = fullName;
+        existingUser.isActive = true;
+        existingUser.isPending = false;
+        await this.usersService.update(existingUser);
         return;
       }
       // REAL USER ALREADY EXISTS

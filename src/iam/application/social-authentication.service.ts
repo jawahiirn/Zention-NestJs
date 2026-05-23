@@ -57,9 +57,12 @@ export class SocialAuthenticationService implements OnModuleInit {
 
           if (existingUser) {
             // MERGE GOOGLE ACCOUNT
-            const claimedUser = existingUser.claimSocial(googleId, fullName);
-            await this.usersService.update(claimedUser);
-            return this.authService.generateTokens(claimedUser);
+            existingUser.googleId = googleId;
+            if (fullName) existingUser.fullName = fullName;
+            existingUser.isActive = true;
+            existingUser.isPending = false;
+            await this.usersService.update(existingUser);
+            return this.authService.generateTokens(existingUser);
           }
 
           // BRAND NEW USER
