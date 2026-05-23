@@ -9,8 +9,8 @@ import {
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from './authentication.service';
-import { UsersService } from '../../users/application/users.service';
-import { CreateUserCommand } from '../../users/application/commands/create-user.command';
+import { UsersService } from '../../users/users.service';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
 
 @Injectable()
 export class SocialAuthenticationService implements OnModuleInit {
@@ -57,14 +57,17 @@ export class SocialAuthenticationService implements OnModuleInit {
 
           if (existingUser) {
             // MERGE GOOGLE ACCOUNT
-            const claimedUser = existingUser.claimSocial(googleId, fullName);
-            await this.usersService.update(claimedUser);
-            return this.authService.generateTokens(claimedUser);
+            existingUser.googleId = googleId;
+            if (fullName) existingUser.fullName = fullName;
+            existingUser.isActive = true;
+            existingUser.isPending = false;
+            await this.usersService.update(existingUser);
+            return this.authService.generateTokens(existingUser);
           }
 
           // BRAND NEW USER
           const newUser = await this.usersService.create(
-            new CreateUserCommand(email, null, fullName, googleId, false, true),
+            new CreateUserDto(email, null, fullName, googleId, false, true),
           );
           return this.authService.generateTokens(newUser);
         }

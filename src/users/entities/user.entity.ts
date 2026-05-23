@@ -1,7 +1,13 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
-export class UserEntity {
+export class User {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
@@ -14,10 +20,10 @@ export class UserEntity {
   @Column({ default: '' })
   fullName: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @Column({ default: true })

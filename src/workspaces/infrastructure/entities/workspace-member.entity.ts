@@ -1,7 +1,15 @@
-import { Column, Entity, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { WorkspaceRole } from '../../domain/enums/workspace-role.enum';
 import { WorkspaceMemberStatus } from '../../domain/enums/workspace-member-status.enum';
-import { UserEntity } from '../../../users/infrastructure/entities/user.entity';
+import { User } from '../../../users/entities/user.entity';
 import { WorkspaceEntity } from './workspace.entity';
 
 @Entity('workspace_members')
@@ -35,9 +43,9 @@ export class WorkspaceMemberEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: UserEntity;
+  user: User;
 
   @ManyToOne(() => WorkspaceEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workspaceId' })

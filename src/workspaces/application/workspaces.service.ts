@@ -7,8 +7,8 @@ import { WorkspaceMember } from '../domain/workspace-member';
 import { WorkspaceMemberStatus } from '../domain/enums/workspace-member-status.enum';
 import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { UpdateWorkspaceCommand } from './commands/update-workspace.command';
-import { UsersService } from '../../users/application/users.service';
-import { CreateUserCommand } from '../../users/application/commands/create-user.command';
+import { UsersService } from '../../users/users.service';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { WorkspaceMemberRepositoryPort } from './ports/workspace-member-repository.port';
 import { InviteMemberCommand } from './commands/invite-member.command';
 import { AcceptInvitationCommand } from './commands/accept-invitation.command';
@@ -53,8 +53,7 @@ export class WorkspacesService {
         let user = await this.usersService.findByEmail(email);
 
         if (!user) {
-          // Create ghost user
-          user = await this.usersService.create(new CreateUserCommand(email));
+          user = await this.usersService.create(new CreateUserDto(email));
         }
 
         if (user.id === command.userId) continue; // Skip if already the owner
@@ -114,7 +113,7 @@ export class WorkspacesService {
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      user = await this.usersService.create(new CreateUserCommand(email));
+      user = await this.usersService.create(new CreateUserDto(email));
     }
 
     const membership = WorkspaceFactory.createMembership(

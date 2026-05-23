@@ -1,8 +1,14 @@
-import { Injectable, Inject, UnauthorizedException, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  UnauthorizedException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { HashingService } from './ports/hashing.service';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
-import { User } from '../../users/domain/user';
+import { User } from '../../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../infrastructure/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
@@ -11,8 +17,8 @@ import { RefreshTokenCommand } from './commands/refresh-token.command';
 import { RefreshTokenStoragePort } from './ports/refresh-token-storage.port';
 import { randomUUID } from 'node:crypto';
 import { InvalidatedRefreshTokenError } from '../infrastructure/storage/refresh-token.storage';
-import { UsersService } from '../../users/application/users.service';
-import { CreateUserCommand } from '../../users/application/commands/create-user.command';
+import { UsersService } from '../../users/users.service';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -26,7 +32,7 @@ export class AuthenticationService {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(RefreshTokenStoragePort)
     private readonly refreshTokenIdsStorage: RefreshTokenStoragePort,
-  ) {}
+  ) { }
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
     const { email, password, fullName } = signUpDto;
@@ -37,8 +43,11 @@ export class AuthenticationService {
     if (existingUser) {
       if (existingUser.isPending) {
         // ACTIVATE GHOST USER
-        const activatedUser = existingUser.activate(hashedPassword, fullName);
-        await this.usersService.update(activatedUser);
+        existingUser.password = hashedPassword;
+        if (fullName) existingUser.fullName = fullName;
+        existingUser.isActive = true;
+        existingUser.isPending = false;
+        await this.usersService.update(existingUser);
         return;
       }
       // REAL USER ALREADY EXISTS
@@ -46,7 +55,7 @@ export class AuthenticationService {
     }
 
     await this.usersService.create(
-      new CreateUserCommand(email, hashedPassword, fullName),
+      new CreateUserDto(email, hashedPassword, fullName),
     );
     this.logger.log(`User created: ${email}`);
   }
