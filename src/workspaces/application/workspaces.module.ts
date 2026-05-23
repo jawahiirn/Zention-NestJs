@@ -3,7 +3,7 @@ import { WorkspacesService } from './workspaces.service';
 import { WorkspacesController } from '../presenters/http/workspaces.controller';
 import { WorkspaceMembersController } from '../presenters/http/workspace-members.controller';
 import { WorkspacesInfrastructureModule } from '../infrastructure/infrastructure.module';
-import { UsersModule } from '../../users-old/application/users.module';
+import { UsersModule } from '../../users/users.module';
 
 @Module({
   imports: [WorkspacesInfrastructureModule, UsersModule],

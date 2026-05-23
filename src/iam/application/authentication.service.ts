@@ -8,7 +8,7 @@ import {
 import { HashingService } from './ports/hashing.service';
 import { SignUpCommand } from './commands/sign-up.command';
 import { SignInCommand } from './commands/sign-in-command';
-import { User } from '../../users-old/domain/user';
+import { User } from '../../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../infrastructure/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
@@ -32,7 +32,7 @@ export class AuthenticationService {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(RefreshTokenStoragePort)
     private readonly refreshTokenIdsStorage: RefreshTokenStoragePort,
-  ) {}
+  ) { }
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
     const { email, password, fullName } = signUpDto;
