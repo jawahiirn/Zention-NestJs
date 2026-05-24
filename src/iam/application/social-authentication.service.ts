@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  Inject,
   Injectable,
   NotFoundException,
   OnModuleInit,
@@ -10,7 +9,6 @@ import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from './authentication.service';
 import { UsersService } from '../../users/users.service';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
 
 @Injectable()
 export class SocialAuthenticationService implements OnModuleInit {
@@ -66,9 +64,13 @@ export class SocialAuthenticationService implements OnModuleInit {
           }
 
           // BRAND NEW USER
-          const newUser = await this.usersService.create(
-            new CreateUserDto(email, null, fullName, googleId, false, true),
-          );
+          const newUser = await this.usersService.create({
+            email,
+            fullName,
+            googleId,
+            isPending: false,
+            isActive: true,
+          });
           return this.authService.generateTokens(newUser);
         }
         throw err;
