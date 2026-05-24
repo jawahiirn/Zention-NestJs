@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -18,7 +23,7 @@ export class UsersService {
     const user = new User();
     Object.assign(user, dto);
     user.id = this.idGenerator.generate();
-    
+
     try {
       return await this.userRepository.save(user);
     } catch (err: any) {
@@ -34,7 +39,7 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async findOne(googleId: string): Promise<User> {
+  async findByGoogleId(googleId: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { googleId } });
     if (!user) throw new NotFoundException('User not found');
     return user;

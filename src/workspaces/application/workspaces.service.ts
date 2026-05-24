@@ -8,7 +8,6 @@ import { WorkspaceMemberStatus } from '../domain/enums/workspace-member-status.e
 import { CreateWorkspaceCommand } from './commands/create-workspace.command';
 import { UpdateWorkspaceCommand } from './commands/update-workspace.command';
 import { UsersService } from '../../users/users.service';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { WorkspaceMemberRepositoryPort } from './ports/workspace-member-repository.port';
 import { InviteMemberCommand } from './commands/invite-member.command';
 import { AcceptInvitationCommand } from './commands/accept-invitation.command';
@@ -53,7 +52,7 @@ export class WorkspacesService {
         let user = await this.usersService.findByEmail(email);
 
         if (!user) {
-          user = await this.usersService.create(new CreateUserDto(email));
+          user = await this.usersService.create({ email });
         }
 
         if (user.id === command.userId) continue; // Skip if already the owner
@@ -113,7 +112,7 @@ export class WorkspacesService {
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      user = await this.usersService.create(new CreateUserDto(email));
+      user = await this.usersService.create({ email });
     }
 
     const membership = WorkspaceFactory.createMembership(

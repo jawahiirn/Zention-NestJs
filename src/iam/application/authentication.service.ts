@@ -18,7 +18,6 @@ import { RefreshTokenStoragePort } from './ports/refresh-token-storage.port';
 import { randomUUID } from 'node:crypto';
 import { InvalidatedRefreshTokenError } from '../infrastructure/storage/refresh-token.storage';
 import { UsersService } from '../../users/users.service';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -55,7 +54,7 @@ export class AuthenticationService {
     }
 
     await this.usersService.create(
-      new CreateUserDto(email, hashedPassword, fullName),
+      { email, password: hashedPassword, fullName },
     );
     this.logger.log(`User created: ${email}`);
   }
