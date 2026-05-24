@@ -48,7 +48,7 @@ export class SocialAuthenticationService implements OnModuleInit {
       }
 
       try {
-        const user = await this.usersService.findOne(googleId);
+        const user = await this.usersService.findByGoogleId(googleId);
         return this.authService.generateTokens(user);
       } catch (err) {
         if (err instanceof NotFoundException) {
