@@ -4,18 +4,12 @@ import { AppService } from './app.service';
 import { CoreModule } from './core/core.module';
 import { UsersModule } from './users/users.module';
 import { IamModule } from './iam/iam-infrastructure.module';
-import { WorkspacesModule } from './workspaces/application/workspaces.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
-  imports: [
-    CoreModule.forRoot(),
-    UsersModule,
-    IamModule,
-    WorkspacesModule,
-  ],
+  imports: [CoreModule.forRoot(), UsersModule, IamModule],
   controllers: [AppController],
   providers: [
     AppService,
