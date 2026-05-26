@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { WorkspaceMemberEntity } from './entities/workspace-member.entity';
 import { User } from '../../users/entities/user.entity';
 import { IdGeneratorPort } from '../../common/application/ports/id-generator.port';
+import { WorkspaceMemberRole } from '../enums/workspace-roles.enum';
 
 @Injectable()
 export class MembersService {
@@ -42,6 +43,15 @@ export class MembersService {
       user,
     });
 
+    return this.membersRepository.save(member);
+  }
+
+  async addMemberByUserId(workspaceId: string, userId: string, role: WorkspaceMemberRole) {
+    const member = this.membersRepository.create({
+      workspace: { id: workspaceId },
+      user: { id: userId } as User,
+      role,
+    });
     return this.membersRepository.save(member);
   }
 }

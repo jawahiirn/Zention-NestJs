@@ -9,5 +9,6 @@ import { MembersController } from './members.controller';
   imports: [TypeOrmModule.forFeature([WorkspaceMemberEntity, User])],
   controllers: [MembersController],
   providers: [MembersService],
+  exports: [MembersService],
 })
 export class MembersModule {}
