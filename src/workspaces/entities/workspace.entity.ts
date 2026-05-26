@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { WorkspaceMemberEntity } from '../members/entities/workspace-member.entity';
 
 @Entity('workspaces')
 export class WorkspaceEntity {
@@ -35,4 +37,7 @@ export class WorkspaceEntity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
+
+  @OneToMany(() => WorkspaceMemberEntity, (member) => member.workspace)
+  members: WorkspaceMemberEntity[];
 }
