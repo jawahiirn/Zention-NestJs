@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { AuthType } from '../common/enums/auth-type.enum';
 import { Auth } from '../iam/presenters/http/decorators/auth.decorator';
@@ -19,6 +19,14 @@ export class WorkspacesController {
     @ActiveUser('sub') userId: string,
   ) {
     return this.workspacesService.create(createWorkspaceDto, userId);
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param('id') id: string,
+    @ActiveUser('sub') userId: string,
+  ) {
+    return this.workspacesService.findOne(id, userId);
   }
 
   @Get()

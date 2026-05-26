@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WorkspaceEntity } from './entities/workspace.entity';
@@ -36,7 +36,6 @@ export class WorkspacesService {
       user: { id: userId } as User,
       role: WorkspaceMemberRole.OWNER,
     });
-
     await this.membersRepository.save(member);
 
     return savedWorkspace;
@@ -48,5 +47,20 @@ export class WorkspacesService {
       .innerJoin('workspace.members', 'member')
       .where('member.userId = :userId', { userId })
       .getMany();
+  }
+
+  async findOne(id: string, userId: string): Promise<WorkspaceEntity> {
+    const workspace = await this.workspacesRepository
+      .createQueryBuilder('workspace')
+      .innerJoin('workspace.members', 'member')
+      .where('workspace.id = :id', { id })
+      .andWhere('member.userId = :userId', { userId })
+      .getOne();
+
+    if (!workspace) {
+      throw new NotFoundException(`Workspace with ID ${id} not found`);
+    }
+
+    return workspace;
   }
 }
