@@ -31,7 +31,7 @@ export class AuthenticationService {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(RefreshTokenStoragePort)
     private readonly refreshTokenIdsStorage: RefreshTokenStoragePort,
-  ) { }
+  ) {}
 
   async signUp(signUpDto: SignUpCommand): Promise<void> {
     const { email, password, fullName } = signUpDto;
@@ -46,6 +46,7 @@ export class AuthenticationService {
         if (fullName) existingUser.fullName = fullName;
         existingUser.isActive = true;
         existingUser.isPending = false;
+        existingUser.joinedAt = new Date();
         await this.usersService.update(existingUser);
         return;
       }
@@ -53,9 +54,11 @@ export class AuthenticationService {
       throw new ConflictException('User already exists');
     }
 
-    await this.usersService.create(
-      { email, password: hashedPassword, fullName },
-    );
+    await this.usersService.create({
+      email,
+      password: hashedPassword,
+      fullName,
+    });
     this.logger.log(`User created: ${email}`);
   }
 
