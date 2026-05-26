@@ -6,6 +6,7 @@ import { WorkspaceEntity } from './entities/workspace.entity';
 import { MembersModule } from './members/members.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { WorkspaceMemberEntity } from './members/entities/workspace-member.entity';
+import { WorkspaceRolesGuard } from './guards/workspace-role.guard';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { WorkspaceMemberEntity } from './members/entities/workspace-member.entit
     InvitationsModule,
   ],
   controllers: [WorkspacesController],
-  providers: [WorkspacesService],
+  providers: [WorkspacesService, WorkspaceRolesGuard],
 })
 export class WorkspacesModule {}
