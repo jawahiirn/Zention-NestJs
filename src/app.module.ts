@@ -7,9 +7,10 @@ import { IamModule } from './iam/iam-infrastructure.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
-  imports: [CoreModule.forRoot(), UsersModule, IamModule],
+  imports: [CoreModule.forRoot(), UsersModule, IamModule, WorkspacesModule],
   controllers: [AppController],
   providers: [
     AppService,
