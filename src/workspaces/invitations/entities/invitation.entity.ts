@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { WorkspaceEntity } from '../../entities/workspace.entity';
 import { User } from '../../../users/entities/user.entity';
-import { WorkspaceMemberRole } from '../../enums/workspace-roles.enum';
 import { InvitationStatus } from '../../enums/invitation-status.enum';
 
 @Entity('workspace_invitations')
