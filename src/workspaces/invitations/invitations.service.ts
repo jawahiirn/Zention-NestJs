@@ -2,12 +2,11 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  BadRequestException,
 } from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { InvitationEntity } from './entities/invitation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InvitationStatus } from '../enums/invitation-status.enum';
 import { User } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/users.service';
@@ -117,5 +116,22 @@ export class InvitationsService {
       status,
     });
     return this.invitationsRepository.save(invitation);
+  }
+
+  async findAll(workspaceId: string) {
+    return this.invitationsRepository.find({
+      where: { workspace: { id: workspaceId } },
+      relations: ['workspace', 'invitedBy'],
+    });
+  }
+
+  async findByEmail(email: string) {
+    return this.invitationsRepository.find({
+      where: {
+        email,
+        status: In([InvitationStatus.PENDING, InvitationStatus.ACCEPTED]),
+      },
+      relations: ['workspace', 'invitedBy'],
+    });
   }
 }
