@@ -17,8 +17,8 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   password: string | null;
 
-  @Column({ default: '' })
-  fullName: string;
+  @Column({ type: 'varchar', nullable: true })
+  fullName: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -26,12 +26,15 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column()
+  joinedAt: Date;
+
   @Column({ default: true })
   isActive: boolean;
 
   @Column({ type: 'varchar', nullable: true, unique: true })
   googleId: string | null;
 
-  @Column({ default: false })
+  @Column({ default: true }) // Changed to true to indicate placeholder status
   isPending: boolean;
 }
