@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { AuthType } from '../common/enums/auth-type.enum';
@@ -16,11 +17,13 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { WorkspaceMemberRole } from './enums/workspace-roles.enum';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { Roles } from './decorators/roles.decorator';
+import { WorkspaceRolesGuard } from './guards/workspace-role.guard';
 
 @ApiTags('workspaces')
 @Controller('workspaces')
 @ApiBearerAuth()
 @Auth(AuthType.Bearer)
+@UseGuards(WorkspaceRolesGuard)
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
 

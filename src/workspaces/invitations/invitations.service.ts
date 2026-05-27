@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { InvitationEntity } from './entities/invitation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,6 +22,61 @@ export class InvitationsService {
     private readonly usersService: UsersService,
     private readonly membersService: MembersService,
   ) {}
+
+  async updateStatus(
+    workspaceId: string,
+    invitationId: string,
+    status: InvitationStatus,
+    userId: string,
+    userEmail: string,
+  ) {
+    const invitation = await this.invitationsRepository.findOne({
+      where: { id: invitationId, workspace: { id: workspaceId } },
+      relations: ['workspace', 'invitedBy'],
+    });
+
+    if (!invitation) {
+      throw new NotFoundException('Invitation not found');
+    }
+
+    if (
+      status === InvitationStatus.ACCEPTED ||
+      status === InvitationStatus.DECLINED
+    ) {
+      if (invitation.email !== userEmail) {
+        throw new ForbiddenException('You are not authorized.');
+      }
+    }
+
+    if (status === InvitationStatus.REVOKED) {
+      const isInviter = invitation.invitedBy?.id === userId;
+      const isAdminOrOwner = await this.membersService
+        .findOneValid(workspaceId, userId)
+        .then((member) =>
+          [WorkspaceMemberRole.OWNER, WorkspaceMemberRole.ADMIN].includes(
+            member.role,
+          ),
+        )
+        .catch(() => false);
+
+      if (!isInviter && !isAdminOrOwner) {
+        throw new ForbiddenException(
+          'Only the inviter or an admin can revoke invitations',
+        );
+      }
+    }
+
+    if (status === InvitationStatus.ACCEPTED) {
+      const user = await this.usersService.findByEmail(invitation.email);
+      if (user) {
+        user.isPending = false;
+        await this.usersService.update(user);
+      }
+    }
+
+    invitation.status = status;
+    return this.invitationsRepository.save(invitation);
+  }
 
   async inviteMember(
     workspaceId: string,
