@@ -19,10 +19,13 @@ export class UsersService {
     private readonly idGenerator: IdGeneratorPort,
   ) {}
 
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: CreateUserDto, isPending?: boolean): Promise<User> {
     const user = new User();
     Object.assign(user, dto);
     user.id = this.idGenerator.generate();
+    if (isPending !== undefined) {
+      user.isPending = isPending;
+    }
 
     try {
       return await this.userRepository.save(user);
