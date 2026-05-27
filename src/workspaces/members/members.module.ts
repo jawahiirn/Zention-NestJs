@@ -5,13 +5,14 @@ import { User } from '../../users/entities/user.entity';
 import { MembersService } from './members.service';
 import { MembersController } from './members.controller';
 import { InvitationEntity } from '../invitations/entities/invitation.entity';
+import { AcceptedMemberGuard } from './guards/accepted-member.guard';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([WorkspaceMemberEntity, User, InvitationEntity]),
   ],
   controllers: [MembersController],
-  providers: [MembersService],
+  providers: [MembersService, AcceptedMemberGuard],
   exports: [MembersService],
 })
 export class MembersModule {}
