@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { WorkspaceEntity } from './entities/workspace.entity';
 import { IdGeneratorPort } from '../common/application/ports/id-generator.port';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { User } from '../users/entities/user.entity';
 import { WorkspaceMemberRole } from './enums/workspace-roles.enum';
 import { MembersService } from './members/members.service';
@@ -60,5 +61,17 @@ export class WorkspacesService {
     }
 
     return workspace;
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    updateWorkspaceDto: UpdateWorkspaceDto,
+  ): Promise<WorkspaceEntity> {
+    const workspace = await this.findOne(id, userId);
+
+    this.workspacesRepository.merge(workspace, updateWorkspaceDto);
+
+    return this.workspacesRepository.save(workspace);
   }
 }
