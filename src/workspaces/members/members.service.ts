@@ -1,9 +1,8 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WorkspaceMemberEntity } from './entities/workspace-member.entity';
 import { User } from '../../users/entities/user.entity';
-import { IdGeneratorPort } from '../../common/application/ports/id-generator.port';
 import { WorkspaceMemberRole } from '../enums/workspace-roles.enum';
 
 @Injectable()
@@ -11,10 +10,6 @@ export class MembersService {
   constructor(
     @InjectRepository(WorkspaceMemberEntity)
     private readonly membersRepository: Repository<WorkspaceMemberEntity>,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-    @Inject(IdGeneratorPort)
-    private readonly idGenerator: IdGeneratorPort,
   ) {}
 
   async findOne(workspaceId: string, userId: string) {
@@ -43,11 +38,13 @@ export class MembersService {
     workspaceId: string,
     userId: string,
     role: WorkspaceMemberRole,
+    invitationId: string,
   ) {
     const member = this.membersRepository.create({
       workspace: { id: workspaceId },
       user: { id: userId } as User,
       role,
+      invitation: { id: invitationId },
     });
     return this.membersRepository.save(member);
   }
