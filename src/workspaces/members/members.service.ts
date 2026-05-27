@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { WorkspaceMemberEntity } from './entities/workspace-member.entity';
 import { User } from '../../users/entities/user.entity';
 import { WorkspaceMemberRole } from '../enums/workspace-roles.enum';
+import { InvitationStatus } from '../enums/invitation-status.enum';
 
 @Injectable()
 export class MembersService {
@@ -26,11 +27,21 @@ export class MembersService {
 
     return member;
   }
-
+  /*
+    Return valid workspace members => Status Pending | Accepted
+  */
   async findAll(workspaceId: string) {
     return this.membersRepository.find({
-      where: { workspace: { id: workspaceId } },
-      relations: ['user'],
+      where: [
+        { workspace: { id: workspaceId }, invitation: IsNull() },
+        {
+          workspace: { id: workspaceId },
+          invitation: {
+            status: In([InvitationStatus.PENDING, InvitationStatus.ACCEPTED]),
+          },
+        },
+      ],
+      relations: ['user', 'invitation'],
     });
   }
 
