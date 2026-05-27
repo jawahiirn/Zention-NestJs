@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { AuthType } from '../common/enums/auth-type.enum';
 import { Auth } from '../iam/presenters/http/decorators/auth.decorator';
@@ -42,5 +50,11 @@ export class WorkspacesController {
     @ActiveUser('sub') userId: string,
   ) {
     return this.workspacesService.update(id, userId, updateWorkspaceDto);
+  }
+
+  @Delete(':id')
+  @Roles(WorkspaceMemberRole.OWNER)
+  async remove(@Param('id') id: string, @ActiveUser('sub') userId: string) {
+    return this.workspacesService.remove(id, userId);
   }
 }

@@ -74,4 +74,9 @@ export class WorkspacesService {
 
     return this.workspacesRepository.save(workspace);
   }
+
+  async remove(id: string, userId: string): Promise<void> {
+    await this.findOne(id, userId);
+    await this.workspacesRepository.update(id, { isActive: false });
+  }
 }
