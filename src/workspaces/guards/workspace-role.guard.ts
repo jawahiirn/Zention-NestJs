@@ -19,10 +19,9 @@ export class WorkspaceRolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const contextRoles = this.reflector.getAllAndOverride<WorkspaceMemberRole[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const contextRoles = this.reflector.getAllAndOverride<
+      WorkspaceMemberRole[]
+    >(ROLES_KEY, [context.getHandler(), context.getClass()]);
 
     if (!contextRoles) {
       return true;
@@ -37,7 +36,10 @@ export class WorkspaceRolesGuard implements CanActivate {
     }
 
     try {
-      const member = await this.membersService.findOne(workspaceId, user.sub);
+      const member = await this.membersService.findOneValid(
+        workspaceId,
+        user.sub,
+      );
 
       const hasRole = contextRoles.includes(member.role);
       if (!hasRole) {

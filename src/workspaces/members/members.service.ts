@@ -13,11 +13,17 @@ export class MembersService {
     private readonly membersRepository: Repository<WorkspaceMemberEntity>,
   ) {}
 
-  async findOne(workspaceId: string, userId: string) {
+  /*
+   Return valid workspace member => Status Pending | Accepted
+ */
+  async findOneValid(workspaceId: string, userId: string) {
     const member = await this.membersRepository.findOne({
       where: {
         workspace: { id: workspaceId },
         user: { id: userId },
+        invitation: {
+          status: In([InvitationStatus.PENDING, InvitationStatus.ACCEPTED]),
+        },
       },
     });
 
@@ -27,10 +33,11 @@ export class MembersService {
 
     return member;
   }
+
   /*
     Return valid workspace members => Status Pending | Accepted
   */
-  async findAll(workspaceId: string) {
+  async findAllValid(workspaceId: string) {
     return this.membersRepository.find({
       where: [
         { workspace: { id: workspaceId }, invitation: IsNull() },

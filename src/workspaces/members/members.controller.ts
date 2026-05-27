@@ -13,6 +13,6 @@ export class MembersController {
 
   @Get()
   findAll(@Param('workspaceId') workspaceId: string) {
-    return this.membersService.findAll(workspaceId);
+    return this.membersService.findAllValid(workspaceId);
   }
 }
