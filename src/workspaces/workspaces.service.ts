@@ -8,7 +8,6 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { User } from '../users/entities/user.entity';
 import { WorkspaceMemberRole } from './enums/workspace-roles.enum';
 import { MembersService } from './members/members.service';
-import { UsersService } from '../users/users.service';
 import { InvitationsService } from './invitations/invitations.service';
 import { InvitationStatus } from './enums/invitation-status.enum';
 
@@ -18,7 +17,6 @@ export class WorkspacesService {
     @InjectRepository(WorkspaceEntity)
     private readonly workspacesRepository: Repository<WorkspaceEntity>,
     private readonly membersService: MembersService,
-    private readonly usersService: UsersService,
     private readonly invitationsService: InvitationsService,
     @Inject(IdGeneratorPort)
     private readonly idGenerator: IdGeneratorPort,
@@ -54,32 +52,12 @@ export class WorkspacesService {
       selfInvitation.id,
     );
 
-    // TODO: Create a method to invite & create a member
     if (invitedEmails) {
       for (const email of invitedEmails) {
-        let createdUser: User | null = null;
-        const user = await this.usersService.findByEmail(email);
-        // User does not exist in our system. So create temporary user
-        if (!user) {
-          createdUser = await this.usersService.create(
-            {
-              email,
-            },
-            true,
-          );
-        } else {
-          createdUser = user;
-        }
-        const invitation = await this.invitationsService.createInvitation(
-          { email, workspaceId: workspace.id },
-          userId,
-          InvitationStatus.PENDING,
-        );
-        await this.membersService.addMemberByUserId(
+        await this.invitationsService.inviteMember(
           savedWorkspace.id,
-          createdUser.id,
-          WorkspaceMemberRole.MEMBER,
-          invitation.id,
+          email,
+          userId,
         );
       }
     }
