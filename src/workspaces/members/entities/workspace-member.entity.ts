@@ -9,6 +9,7 @@ import {
 import { WorkspaceEntity } from '../../entities/workspace.entity';
 import { User } from '../../../users/entities/user.entity';
 import { WorkspaceMemberRole } from '../../enums/workspace-roles.enum';
+import { InvitationEntity } from '../../invitations/entities/invitation.entity';
 
 @Entity('workspace_members')
 export class WorkspaceMemberEntity {
@@ -32,4 +33,8 @@ export class WorkspaceMemberEntity {
 
   @CreateDateColumn()
   joinedAt: Date;
+
+  @ManyToOne(() => InvitationEntity)
+  @JoinColumn({ name: 'invitationId' })
+  invitation: InvitationEntity;
 }
