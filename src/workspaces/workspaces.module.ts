@@ -7,11 +7,13 @@ import { MembersModule } from './members/members.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { WorkspaceMemberEntity } from './members/entities/workspace-member.entity';
 import { WorkspaceRolesGuard } from './guards/workspace-role.guard';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([WorkspaceEntity, WorkspaceMemberEntity]),
     MembersModule,
+    UsersModule,
     InvitationsModule,
   ],
   controllers: [WorkspacesController],

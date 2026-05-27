@@ -28,8 +28,9 @@ export class WorkspacesController {
   async create(
     @Body() createWorkspaceDto: CreateWorkspaceDto,
     @ActiveUser('sub') userId: string,
+    @ActiveUser('email') email: string,
   ) {
-    return this.workspacesService.create(createWorkspaceDto, userId);
+    return this.workspacesService.create(createWorkspaceDto, userId, email);
   }
 
   @Get(':id')
