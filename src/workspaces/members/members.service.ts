@@ -39,28 +39,6 @@ export class MembersService {
     });
   }
 
-  async addMember(workspaceId: string, email: string) {
-    // 1. Find or create the user (placeholder)
-    let user = await this.usersRepository.findOne({ where: { email } });
-
-    if (!user) {
-      user = this.usersRepository.create({
-        id: this.idGenerator.generate(),
-        email,
-        isPending: true,
-      });
-      await this.usersRepository.save(user);
-    }
-
-    // 2. Create the member record
-    const member = this.membersRepository.create({
-      workspace: { id: workspaceId },
-      user,
-    });
-
-    return this.membersRepository.save(member);
-  }
-
   async addMemberByUserId(
     workspaceId: string,
     userId: string,
