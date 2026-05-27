@@ -30,13 +30,6 @@ export class InvitationEntity {
 
   @Column({
     type: 'enum',
-    enum: WorkspaceMemberRole,
-    default: WorkspaceMemberRole.MEMBER,
-  })
-  role: WorkspaceMemberRole;
-
-  @Column({
-    type: 'enum',
     enum: InvitationStatus,
     default: InvitationStatus.PENDING,
   })
