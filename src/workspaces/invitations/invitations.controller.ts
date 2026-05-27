@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../iam/presenters/http/decorators/auth.decorator';
 import { AuthType } from '../../common/enums/auth-type.enum';
@@ -8,14 +15,12 @@ import { InvitationsService } from './invitations.service';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 
-@ApiTags('workspaces')
+@ApiTags('invitations')
 @Controller('workspaces/:workspaceId/invitations')
 @ApiBearerAuth()
 @Auth(AuthType.Bearer)
 export class InvitationsController {
-  constructor(
-    private readonly invitationsService: InvitationsService,
-  ) {}
+  constructor(private readonly invitationsService: InvitationsService) {}
 
   @Post()
   @UseGuards(AcceptedMemberGuard)
