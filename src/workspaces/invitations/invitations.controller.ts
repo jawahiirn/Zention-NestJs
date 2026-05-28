@@ -64,7 +64,7 @@ export class InvitationsController {
     return this.invitationsService.findAll(workspaceId);
   }
 
-  @Get('invitations')
+  @Get('invitations/me')
   async findMyInvitations(@ActiveUser('email') email: string) {
     return this.invitationsService.findByEmail(email);
   }

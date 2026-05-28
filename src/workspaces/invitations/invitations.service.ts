@@ -129,7 +129,7 @@ export class InvitationsService {
     return this.invitationsRepository.find({
       where: {
         email,
-        status: In([InvitationStatus.PENDING, InvitationStatus.ACCEPTED]),
+        status: In([InvitationStatus.PENDING]),
       },
       relations: ['workspace', 'invitedBy'],
     });
