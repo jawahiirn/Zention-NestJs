@@ -1,7 +1,7 @@
 import {
   Injectable,
   NotFoundException,
-  ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, IsNull, Repository } from 'typeorm';
@@ -9,12 +9,15 @@ import { WorkspaceMemberEntity } from './entities/workspace-member.entity';
 import { User } from '../../users/entities/user.entity';
 import { WorkspaceMemberRole } from '../enums/workspace-roles.enum';
 import { InvitationStatus } from '../enums/invitation-status.enum';
+import { InvitationEntity } from '../invitations/entities/invitation.entity';
 
 @Injectable()
 export class MembersService {
   constructor(
     @InjectRepository(WorkspaceMemberEntity)
     private readonly membersRepository: Repository<WorkspaceMemberEntity>,
+    @InjectRepository(InvitationEntity)
+    private readonly invitationsRepository: Repository<InvitationEntity>,
   ) {}
 
   /*
@@ -114,7 +117,7 @@ export class MembersService {
     ]);
 
     if (target.role === WorkspaceMemberRole.OWNER) {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         'You do not have the permission for this operation',
       );
     }
@@ -123,7 +126,7 @@ export class MembersService {
       caller.role === WorkspaceMemberRole.ADMIN &&
       target.role === WorkspaceMemberRole.ADMIN
     ) {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         'You do not have the permission for this operation',
       );
     }
@@ -153,7 +156,9 @@ export class MembersService {
       memberId,
       callerUserId,
     );
-
     await this.membersRepository.remove(target);
+    if (target.invitation) {
+      await this.invitationsRepository.remove(target.invitation); // need to inject InvitationEntity repo
+    }
   }
 }
