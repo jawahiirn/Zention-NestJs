@@ -23,10 +23,10 @@ export class UsersService {
     const user = new User();
     Object.assign(user, dto);
     user.id = this.idGenerator.generate();
+    user.joinedAt = new Date();
     if (isPending !== undefined) {
       user.isPending = isPending;
     }
-
     try {
       return await this.userRepository.save(user);
     } catch (err: any) {

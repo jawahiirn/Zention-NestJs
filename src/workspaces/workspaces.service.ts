@@ -69,7 +69,9 @@ export class WorkspacesService {
     return this.workspacesRepository
       .createQueryBuilder('workspace')
       .innerJoin('workspace.members', 'member')
+      .leftJoinAndSelect('workspace.createdBy', 'creator')
       .where('member.userId = :userId', { userId })
+      .andWhere('workspace.isActive = :isActive', { isActive: true })
       .getMany();
   }
 
@@ -79,6 +81,8 @@ export class WorkspacesService {
       .innerJoin('workspace.members', 'member')
       .where('workspace.id = :id', { id })
       .andWhere('member.userId = :userId', { userId })
+      .andWhere('workspace.isActive = :isActive', { isActive: true })
+      .leftJoinAndSelect('workspace.createdBy', 'creator')
       .getOne();
 
     if (!workspace) {
