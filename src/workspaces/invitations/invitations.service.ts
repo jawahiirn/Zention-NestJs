@@ -37,13 +37,18 @@ export class InvitationsService {
     if (!invitation) {
       throw new NotFoundException('Invitation not found');
     }
+    if (!invitation.workspace.isActive) {
+      throw new NotFoundException('Workspace not found or was deleted');
+    }
 
     if (
       status === InvitationStatus.ACCEPTED ||
       status === InvitationStatus.DECLINED
     ) {
       if (invitation.email !== userEmail) {
-        throw new ForbiddenException('You are not authorized.');
+        throw new ForbiddenException(
+          'You are not authorized or do not have sufficient permissions.',
+        );
       }
     }
 
@@ -60,7 +65,7 @@ export class InvitationsService {
 
       if (!isInviter && !isAdminOrOwner) {
         throw new ForbiddenException(
-          'Only the inviter or an admin can revoke invitations',
+          'You are not authorized or do not have sufficient permissions.',
         );
       }
     }
@@ -118,18 +123,19 @@ export class InvitationsService {
     return this.invitationsRepository.save(invitation);
   }
 
-  async findAll(workspaceId: string) {
+  async findWorkspaceInvitations(workspaceId: string) {
     return this.invitationsRepository.find({
       where: { workspace: { id: workspaceId } },
       relations: ['workspace', 'invitedBy'],
     });
   }
 
-  async findByEmail(email: string) {
+  async findUserInvitations(email: string) {
     return this.invitationsRepository.find({
       where: {
         email,
         status: In([InvitationStatus.PENDING]),
+        workspace: { isActive: true },
       },
       relations: ['workspace', 'invitedBy'],
     });
