@@ -61,11 +61,11 @@ export class InvitationsController {
   @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.ADMIN)
   @UseGuards(WorkspaceRolesGuard)
   async findAll(@Param('workspaceId') workspaceId: string) {
-    return this.invitationsService.findAll(workspaceId);
+    return this.invitationsService.findWorkspaceInvitations(workspaceId);
   }
 
   @Get('invitations/me')
   async findMyInvitations(@ActiveUser('email') email: string) {
-    return this.invitationsService.findByEmail(email);
+    return this.invitationsService.findUserInvitations(email);
   }
 }
