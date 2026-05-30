@@ -69,8 +69,12 @@ export class WorkspacesService {
     return this.workspacesRepository
       .createQueryBuilder('workspace')
       .innerJoin('workspace.members', 'member')
+      .innerJoin('member.invitation', 'invitation')
       .leftJoinAndSelect('workspace.createdBy', 'creator')
       .where('member.userId = :userId', { userId })
+      .andWhere('invitation.status = :status', {
+        status: InvitationStatus.ACCEPTED,
+      })
       .andWhere('workspace.isActive = :isActive', { isActive: true })
       .getMany();
   }

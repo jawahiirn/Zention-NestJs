@@ -18,6 +18,7 @@ import { WorkspaceMemberRole } from './enums/workspace-roles.enum';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { Roles } from './decorators/roles.decorator';
 import { WorkspaceRolesGuard } from './guards/workspace-role.guard';
+import { AcceptedMemberGuard } from './members/guards/accepted-member.guard';
 
 @ApiTags('workspaces')
 @Controller('workspaces')
@@ -37,6 +38,7 @@ export class WorkspacesController {
   }
 
   @Get(':id')
+  @UseGuards(AcceptedMemberGuard)
   async findOne(@Param('id') id: string, @ActiveUser('sub') userId: string) {
     return this.workspacesService.findOne(id, userId);
   }
@@ -47,6 +49,7 @@ export class WorkspacesController {
   }
 
   @Patch(':id')
+  @UseGuards(AcceptedMemberGuard)
   @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.ADMIN)
   async update(
     @Param('id') id: string,
@@ -57,6 +60,7 @@ export class WorkspacesController {
   }
 
   @Delete(':id')
+  @UseGuards(AcceptedMemberGuard)
   @Roles(WorkspaceMemberRole.OWNER)
   async remove(@Param('id') id: string, @ActiveUser('sub') userId: string) {
     return this.workspacesService.remove(id, userId);
