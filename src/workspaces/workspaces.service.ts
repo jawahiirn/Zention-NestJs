@@ -27,12 +27,14 @@ export class WorkspacesService {
     userId: string,
     userEmail: string,
   ) {
-    const { invitedEmails, name, icon, iconColor } = createWorkspaceDto;
+    const { invitedEmails, name, icon, iconColor, onboardingAnswers } =
+      createWorkspaceDto;
     const workspace = this.workspacesRepository.create({
       id: this.idGenerator.generate(),
       name: name,
       icon: icon ?? null,
       iconColor: iconColor ?? null,
+      onboardingAnswers: onboardingAnswers ?? null,
       createdBy: { id: userId } as User,
     });
 

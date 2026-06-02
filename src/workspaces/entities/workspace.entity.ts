@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { WorkspaceMemberEntity } from '../members/entities/workspace-member.entity';
 
@@ -27,6 +28,10 @@ export class WorkspaceEntity {
 
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
+
+  @Exclude()
+  @Column({ type: 'jsonb', nullable: true })
+  onboardingAnswers: Record<string, any> | null;
 
   @CreateDateColumn()
   createdAt: Date;
