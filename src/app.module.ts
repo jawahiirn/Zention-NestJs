@@ -5,6 +5,7 @@ import { CoreModule } from './core/core.module';
 import { UsersModule } from './users/users.module';
 import { IamModule } from './iam/iam-infrastructure.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { WorkspacesModule } from './workspaces/workspaces.module';
@@ -21,6 +22,10 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
     },
   ],
 })

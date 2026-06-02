@@ -3,6 +3,7 @@ import {
   IsArray,
   IsEmail,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -31,4 +32,12 @@ export class CreateWorkspaceDto {
   @IsArray()
   @IsEmail({}, { each: true })
   invitedEmails?: string[];
+
+  @ApiProperty({
+    example: { purpose: 'work' },
+    required: false,
+  })
+  @IsOptional()
+  @IsObject()
+  onboardingAnswers?: Record<string, any>;
 }
