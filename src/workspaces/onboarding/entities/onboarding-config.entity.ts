@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('onboarding_configs')
+@Entity('workspace_configurations')
 export class OnboardingConfigEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
