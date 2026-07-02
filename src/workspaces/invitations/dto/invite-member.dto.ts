@@ -8,7 +8,13 @@ export class InviteMemberDto {
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ enum: WorkspaceMemberRole, required: false })
+  /** Role to assign upon acceptance. Available: OWNER, ADMIN, MEMBER, GUEST */
+  @ApiProperty({
+    enum: WorkspaceMemberRole,
+    enumName: 'WorkspaceMemberRole',
+    required: false,
+    example: WorkspaceMemberRole.MEMBER,
+  })
   @IsOptional()
   @IsEnum(WorkspaceMemberRole)
   role?: WorkspaceMemberRole;
