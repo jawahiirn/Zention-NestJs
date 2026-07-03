@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('workspace_configurations')
-export class OnboardingConfigEntity {
+export class ConfigEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

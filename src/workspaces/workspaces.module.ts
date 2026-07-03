@@ -5,7 +5,7 @@ import { WorkspacesController } from './workspaces.controller';
 import { WorkspaceEntity } from './entities/workspace.entity';
 import { MembersModule } from './members/members.module';
 import { InvitationsModule } from './invitations/invitations.module';
-import { OnboardingModule } from './onboarding/onboarding.module';
+import { ConfigModule } from './config/config.module';
 import { WorkspaceMemberEntity } from './members/entities/workspace-member.entity';
 import { UsersModule } from '../users/users.module';
 
@@ -15,7 +15,7 @@ import { UsersModule } from '../users/users.module';
     MembersModule,
     UsersModule,
     InvitationsModule,
-    OnboardingModule,
+    ConfigModule,
   ],
   controllers: [WorkspacesController],
   providers: [WorkspacesService],

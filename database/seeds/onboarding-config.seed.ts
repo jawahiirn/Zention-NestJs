@@ -2,7 +2,7 @@ import dataSource from '../data-source';
 
 async function seed() {
   const ds = await dataSource.initialize();
-  const repo = ds.getRepository('OnboardingConfigEntity');
+  const repo = ds.getRepository('ConfigEntity');
 
   const existing = await repo.findOne({ where: { key: 'default' } });
   if (existing) {

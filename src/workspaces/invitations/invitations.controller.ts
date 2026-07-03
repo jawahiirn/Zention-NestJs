@@ -37,6 +37,7 @@ export class InvitationsController {
       workspaceId,
       inviteMemberDto.email,
       inviterUserId,
+      inviteMemberDto.role,
     );
   }
 

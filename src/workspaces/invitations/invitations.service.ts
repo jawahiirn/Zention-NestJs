@@ -86,6 +86,7 @@ export class InvitationsService {
     workspaceId: string,
     email: string,
     inviterUserId: string,
+    role: WorkspaceMemberRole = WorkspaceMemberRole.MEMBER,
   ) {
     let user = await this.usersService.findByEmail(email);
 
@@ -96,12 +97,14 @@ export class InvitationsService {
     const invitation = await this.createInvitation(
       { email, workspaceId },
       inviterUserId,
+      InvitationStatus.PENDING,
+      role,
     );
 
     await this.membersService.addMemberByUserId(
       workspaceId,
       user.id,
-      WorkspaceMemberRole.MEMBER,
+      role,
       invitation.id,
     );
 
@@ -112,6 +115,7 @@ export class InvitationsService {
     createInvitationDto: CreateInvitationDto,
     inviterUserId: string,
     status: InvitationStatus = InvitationStatus.PENDING,
+    role?: WorkspaceMemberRole,
   ) {
     const { email, workspaceId } = createInvitationDto;
     const invitation = this.invitationsRepository.create({
@@ -119,6 +123,7 @@ export class InvitationsService {
       email,
       invitedBy: { id: inviterUserId } as User,
       status,
+      role: role ?? null,
     });
     return this.invitationsRepository.save(invitation);
   }

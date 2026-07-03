@@ -10,6 +10,7 @@ import {
 import { WorkspaceEntity } from '../../entities/workspace.entity';
 import { User } from '../../../users/entities/user.entity';
 import { InvitationStatus } from '../../enums/invitation-status.enum';
+import { WorkspaceMemberRole } from '../../enums/workspace-roles.enum';
 
 @Entity('workspace_invitations')
 export class InvitationEntity {
@@ -33,6 +34,13 @@ export class InvitationEntity {
     default: InvitationStatus.PENDING,
   })
   status: InvitationStatus;
+
+  @Column({
+    type: 'enum',
+    enum: WorkspaceMemberRole,
+    nullable: true,
+  })
+  role: WorkspaceMemberRole | null;
 
   @CreateDateColumn()
   createdAt: Date;
