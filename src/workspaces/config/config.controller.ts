@@ -11,6 +11,11 @@ import { AuthType } from '../../common/enums/auth-type.enum';
 export class ConfigController {
   constructor(private readonly configService: ConfigService) {}
 
+  @Get()
+  async getAllConfigs() {
+    return this.configService.findAll();
+  }
+
   @Get(':key')
   @ApiParam({
     name: 'key',

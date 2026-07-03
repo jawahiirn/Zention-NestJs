@@ -16,4 +16,8 @@ export class ConfigService {
     });
     return config ? config.config : null;
   }
+
+  async findAll() {
+    return this.configRepository.find();
+  }
 }
